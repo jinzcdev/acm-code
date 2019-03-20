@@ -8,7 +8,7 @@ int number[maxn],N;
 
 struct node{
     int data;
-    int lchild,rchild = -1;
+    int lchild,rchild;
 }BST[maxn];
 
 int index = 0;
@@ -16,7 +16,6 @@ void InOrderTraverse(int root){
     if(root == -1 || root > N) return;
     InOrderTraverse(BST[root].lchild);
     BST[root].data = number[index++];
-    printf("index: %d  %d\n",root,BST[root].data);
     InOrderTraverse(BST[root].rchild);
 }
 
@@ -34,25 +33,13 @@ void LevelOrderTravers(int root){
     }
 }
 
-void push(queue<int> &q,int a,int b){
-    if(a != -1) q.push(a);
-    if(b != -1) q.push(b);
-}
-
 int main(){
     scanf("%d",&N);
-    queue<int> q;
-    int lchild,rchild,father;
-    scanf("%d %d",&lchild,&rchild);
-    BST[0].lchild = lchild;BST[0].rchild = rchild;
-    push(q, lchild, rchild);
-    for (int i = 0; i < N - 1; i++){
+    int lchild,rchild;
+    for (int i = 0; i < N; i++){
         scanf("%d %d",&lchild,&rchild);
-        father = q.front();
-        q.pop();
-        BST[father].lchild = lchild;
-        BST[father].rchild = rchild;
-        push(q, lchild, rchild);
+        BST[i].lchild = lchild;
+        BST[i].rchild = rchild;
     }
     for(int i = 0; i < N; i++){
         scanf("%d",&number[i]);
@@ -61,8 +48,5 @@ int main(){
     InOrderTraverse(0);
     LevelOrderTravers(0);
 
-    // for (int i = 0; i < N; i++) {
-    //     printf("%d %d\n",BST[i].lchild,BST[i].rchild);
-    // }
     return 0;
 }
