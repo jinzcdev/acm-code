@@ -98,5 +98,20 @@ ElementType Pop( Deque D ){
     return v;
 }
 
-int Inject( ElementType X, Deque D );
-ElementType Eject( Deque D );
+int Inject( ElementType X, Deque D ){
+	PtrToNode newNode = (PtrToNode)malloc(sizeof(struct Node));
+	newNode -> Element = X;
+	D -> Rear -> Next = newNode;
+	newNode -> Last = D -> Rear;
+	newNode -> Next = NULL;
+	D -> Rear = newNode;
+	return 1;
+}
+
+ElementType Eject( Deque D ){
+	if(D -> Front == D -> Rear) return ERROR;
+	PtrToNode end = D -> Rear;
+	D -> Rear = end -> Last;
+	D -> Rear -> Next = NULL;
+	return end -> Element;
+}
