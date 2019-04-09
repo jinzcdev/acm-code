@@ -60,6 +60,15 @@ bool judge1(node* root){
 	}
 }
 
+bool preOrder(node* root){
+	bool is = true;
+	stack<node*> s;
+	s.push(root);
+	while(!s.empty()){
+
+	}
+}
+
 int main(){
 	int t;
 	scanf("%d",&k);
