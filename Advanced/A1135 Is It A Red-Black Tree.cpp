@@ -3,9 +3,8 @@
 #include <cmath>
 #include <algorithm>
 #include <vector>
+#include <stack>
 using namespace std;
-
-
 int k,n;
 vector<int> pre,in;
 
@@ -45,28 +44,35 @@ void post(node* root){
 	}
 }
 
-void isRedBlackTree(node* root){
-	if(root -> color == -1 ){
-		printf("NO\n");
-		return;
-	}
-
+// determine if the root is red.if true,return false,or not,return true.
+bool judgeRoot(node* root){
+	if(root -> data < 0) return false;
+	return true;
 }
 
-
-bool judge1(node* root){
-	if(root != NULL){
-
-	}
+//determine if the children of the red node are black.
+bool judgeRedNode(node* p){
+	if(p -> lchild != NULL && p -> data < 0) return false;
+	if(p -> rchild != NULL && p -> data < 0) return false;
+	return true;
 }
 
-bool preOrder(node* root){
+bool judgeTreePreOrder(node* root){
 	bool is = true;
 	stack<node*> s;
 	s.push(root);
+	node* p;
 	while(!s.empty()){
-
+		p = s.top();s.pop();
+		if(p -> data < 0 && !judgeRedNode(p)){
+			is = false;
+			break;
+		}
+		if(p -> rchild != NULL) s.push(p -> rchild);
+		if(p -> lchild != NULL) s.push(p -> lchild);
 	}
+	free(p);
+	return is;
 }
 
 int main(){
@@ -81,7 +87,7 @@ int main(){
 		}
 		sort(in.begin(),in.end(),cmp);
 		node* root = create(0,n - 1,0,n - 1);
-		isRedBlackTree(root);
+	//	isRedBlackTree(root);
 		free(root);
 		pre.clear();
 		in.clear();

@@ -1,4 +1,7 @@
 test.cpp
+a
+/a
+/**/a
 # Prerequisites
 *.d
 
