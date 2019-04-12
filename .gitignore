@@ -2,6 +2,8 @@ test.cpp
 a
 /a
 /**/a
+/test
+
 # Prerequisites
 *.d
 
