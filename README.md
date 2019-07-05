@@ -1,6 +1,7 @@
 # PAT
-PAT (Advanced Level) Practice
-# Introduction
-This is the project to record my answer of PAT practice(Advanced Level),which is the beginning of entering Zhejiang University.I know it's hard for me,similarly,and there are also many difficulties I need to face.But,that is the way I have to go.
 
-# This is a test.
+> The exercises is derived from [PTA](https://pintia.cn/problem-sets?tab=0) sponsored by Zhejiang University.
+
+# Introduction
+This is the project to record my answer of PAT practices,which is the beginning of chasing Zhejiang University. The recording of answer aims to help those who intends to take the [^PAT] as much as I do or wants to improve the programming ability.  
+[^PAT]: Programming Ability Test.
