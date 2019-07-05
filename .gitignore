@@ -3,6 +3,7 @@ a
 /a
 /**/a
 /test
+/.idea
 
 # Prerequisites
 *.d
@@ -36,3 +37,6 @@ a
 *.exe
 *.out
 *.app
+/.vscode
+/.DS_Store
+/**/a.dSYM
