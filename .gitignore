@@ -5,6 +5,10 @@ a
 /test
 /.idea
 
+*.dSYM
+/**/*.dSYM
+
+
 # Prerequisites
 *.d
 

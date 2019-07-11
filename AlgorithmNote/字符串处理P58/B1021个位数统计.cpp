@@ -1,6 +1,5 @@
 #include <cstdio>
 #include <cstring>
-
 const int maxn = 1010;
 
 char n[maxn];
