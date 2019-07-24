@@ -15,13 +15,18 @@ void reverse(int k){
     int cnt = 0;
     int last = L[head].next;
     int p = L[last].next;
-    while (n > k){
+    bool flag = true;p
+    while (n >= k){
         L[last].next = L[p].next;
         L[p].next = L[head].next;
         L[head].next = p;
         p = L[last].next;
         cnt++;
         if (cnt == k - 1){
+            if (flag){
+                first = L[head].next;
+                flag = false;
+            }
             head = last;
             p = L[L[head].next].next;
             n = n - k;
@@ -40,9 +45,12 @@ int main(){
         scanf("%d%d", &L[pos].data, &L[pos].next);
     }
 
-    reverse(k);
+    if (k != 1){
+        reverse(k);
+    }
 
-    printf("-------------\n");
+    printf("-----------\n");
+
     int p = first;
     while (p != -1){
         printf("%05d %d ", p, L[p].data);
@@ -56,3 +64,14 @@ int main(){
 
     return 0;
 }
+
+
+/*
+00100 6 3
+00000 4 99999
+00100 1 12309
+68237 6 -1
+33218 3 00000
+99999 5 68237
+12309 2 33218
+*/
