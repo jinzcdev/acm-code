@@ -1,9 +1,12 @@
-test.cpp
+# test.cpp
+*test.c
+*test.cpp
 a
 /a
 /**/a
 /test
 /.idea
+
 
 *.dSYM
 /**/*.dSYM
