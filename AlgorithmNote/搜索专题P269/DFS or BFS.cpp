@@ -5,7 +5,7 @@
 using namespace std;
 const int maxn = 10;
 struct node {
-    int x, y;
+    int x, y; 
 } Node, U, A;
 
 int n = 8, m = 8;
@@ -48,9 +48,6 @@ bool BFS(){
                         matrix[v[i].x + 1][v[i].x] = 'S';                        
                     }
                 }
-                
-                
-                printf("%d -- %d\n", newX,newY);
             }
         }
         
@@ -107,6 +104,6 @@ U.......
 ........
 ........
 .S......
-S.......
-US......
+S..SSSSS
+U.......
 */
