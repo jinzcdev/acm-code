@@ -1,30 +1,12 @@
 // http://codeup.cn/problem.php?cid=100000611&pid=0
 #include <cstdio>
+#include <cstring>
 const int maxn = 1010;
 struct node {
     char data;
     node* lchild;
     node* rchild;
 };
-
-node* newNode(int data){
-    node* Node = new node;
-    Node -> data = data;
-    Node -> lchild = Node -> rchild = NULL;
-    return Node;
-}
-
-void insert(node* &root, int x){
-    if (root == NULL){
-        root = newNode(x);
-        return;
-    }
-    if (x < root -> data){
-        insert(root -> lchild, x);
-    } else {
-        insert(root -> rchild, x);
-    }
-}
 
 char pre[maxn], in[maxn];
 node* create(int preL, int preR, int inL, int inR){
@@ -33,12 +15,9 @@ node* create(int preL, int preR, int inL, int inR){
     }
     node* root = new node;
     root -> data = pre[preL];
-    int k;
-    for (int i = inL; i <= inR; i++){
-        if (in[k] == pre[preL]){
-            break;
-        }
-    }
+    int k = inL;
+    while(in[k] != pre[preL])
+    	k++;
     int numLeft = k - inL;
     root -> lchild = create(preL + 1, preL + numLeft, inL, k - 1);
     root -> rchild = create(preL + numLeft + 1, preR, k + 1, inR);
@@ -55,11 +34,16 @@ void postOrder(node* root){
 }
 
 int main(){
-    node* root;
+    int len;
     while (scanf("%s %s", pre, in) != EOF){
-        root = create(0, 0, 0, 0);
-        postOrder(root);
+        len = strlen(pre); 
+        postOrder(create(0, len - 1, 0, len - 1));
         printf("\n");
     }
     return 0;
 }
+
+/*
+DBACEGF ABCDEFG
+BCAD CBAD
+*/
