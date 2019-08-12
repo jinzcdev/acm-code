@@ -34,9 +34,8 @@ void postOrder(node* root){
 }
 
 int main(){
-    int len;
     while (scanf("%s %s", pre, in) != EOF){
-        len = strlen(pre); 
+        int len = strlen(pre); 
         postOrder(create(0, len - 1, 0, len - 1));
         printf("\n");
     }
