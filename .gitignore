@@ -2,8 +2,9 @@
 !*/
 !*.*
 
-*test.c
-*test.cpp
+# *test.c
+# *test.cpp
+/**/tempCodeRunnerFile.cpp
 a
 /a
 /**/a
