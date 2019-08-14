@@ -1,4 +1,4 @@
-// https://pintia.cn/problem-sets/994805342720868352/problems/994805485033603072
+// https://pintia.cn/problem-sets/9948053427208 68352/problems/994805485033603072
 #include <cstdio>
 #include <queue>
 using namespace std;
@@ -8,7 +8,6 @@ struct node {
     node* lchild;
     node* rchild;
 };
-
 int n, post[maxn], in[maxn];
 
 void levelorder(node* root){
@@ -26,6 +25,8 @@ void levelorder(node* root){
 }
 
 node* create(int postL, int postR, int inL, int inR){
+    if (postL > postR)
+        return NULL;
     node* root = new node;
     root -> data = post[postR];
     int k = inL;

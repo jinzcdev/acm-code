@@ -1,21 +1,18 @@
 #include <cstdio>
-#include <cstring>
 #include <queue>
-#include <algorithm>
 using namespace std;
 const int maxn = 30;
-
 int n,in[maxn],post[maxn];
 
-struct Node{
+struct node{
 	int data;
-	Node* lchild;
-	Node* rchild;
+	node* lchild;
+	node* rchild;
 };
 
-Node* create(int postL,int postR,int inL,int inR){
+node* create(int postL,int postR,int inL,int inR){
 	if(postL > postR) return NULL;
-	Node* root = new Node;
+	node* root = new node;
 	root -> data = post[postR];
 	int k;
 	for (k = inL; k <= inR; ++k){
@@ -28,12 +25,12 @@ Node* create(int postL,int postR,int inL,int inR){
 	return root;
 }
 
-void BFS(Node* root){
-	queue<Node *> q;
+void BFS(node* root){
+	queue<node *> q;
 	q.push(root);
 	int num = 0;
 	while(!q.empty()){
-		Node* node = q.front();
+		node* node = q.front();
 		q.pop();
 		printf("%d",node -> data);
 		if(num++ < n - 1) printf(" ");
@@ -49,7 +46,7 @@ int main(){
 	for (int i = 0; i < n; ++i){
 		scanf("%d",&in[i]);
 	}
-	Node* root = create(0,n-1,0,n-1);
+	node* root = create(0,n-1,0,n-1);
 	BFS(root);
 	return 0;
 }
