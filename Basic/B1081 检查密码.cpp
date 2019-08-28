@@ -2,35 +2,28 @@
 #include <iostream>
 #include <string>
 using namespace std;
-string answer[5] = {
-    "Your password is wan mei.",
-    "Your password is tai duan le.",
-    "Your password is tai luan le.",
-    "Your password needs shu zi.",
-    "Your password needs zi mu."
-};
-
 int main(){
-    int n, k = 0;
+    int n;
     string pw;
     cin >> n;
     getchar();
     for (int i = 0; i < n; i++){
         getline(cin, pw);
-        if (pw.length() < 6) {
-            cout << answer[1];
-            continue;
-        }
-        int len = 0, type;
-        for (int j = 0; j < pw.length(); j++){
-            if (pw[i] != '.' && !(pw[i] >= 'a' && pw[i] <= 'z') 
-            && !(pw[i] >= 'A' && pw[i] <= 'Z')) {
-                type = 2;
-                break;
+        if (pw.length() >= 6) {
+            int invalid = 0, hasAlpha = 0, hasDigit = 0;
+            for (int j = 0; j < pw.length(); j++){
+                if ((pw[i] >= 'a' && pw[i] <= 'z') 
+                || (pw[i] >= 'A' && pw[i] <= 'Z')) hasAlpha = 1;
+                else if (pw[i] >= 0 && pw[i] <= 9) hasDigit = 1;
+                else if (pw[i] != '.') invalid = 1;
             }
+            if (invalid == 1) cout << "Your password is tai luan le.\n";
+            else if (!hasAlpha) cout << "Your password needs zi mu.\n";
+            else if (!hasDigit) cout << "Your password needs shu zi.\n";
+            else cout << "Your password is wan mei.\n";
+        } else {
+            cout << "Your password is tai duan le.\n";            
         }
-        
-
     }
-    
+    return 0;
 }
