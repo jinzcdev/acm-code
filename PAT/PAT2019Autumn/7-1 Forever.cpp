@@ -1,9 +1,19 @@
 #include <cstdio>
 #include <cmath>
 #include <algorithm>
+#include <vector>
 using namespace std;
+struct node {
+    int n, v;
+};
 int n, k, m;
-int maxValue;
+bool flag;
+vector<node> ans;
+
+bool cmp(node a, node b) {
+    if (a.n != b.n) return a.n < b.n;
+    return a.v < b.v;
+}
 
 bool isPrime(int x) {
     if (x <= 1) return false;
@@ -13,25 +23,34 @@ bool isPrime(int x) {
     return true;
 }
 
-int getDivisor(int a, int b) {
-    if (b < a) swap(a, b);
-    int c = b % a;
-    while (c != 0) {
-        b = a;
-        a = c;
-        c = b % a;
-    }
-    return a;
+int gcd(int a, int b) {
+    return b == 0 ? a : gcd(b, a % b);
 }
 
-
-int getSum(int x) {
-    int sum = 0;
+int getDigitSum(int x) {
+    int sumD = 0;
     while (x != 0) {
-        sum += x % 10;
+        sumD += x % 10;
         x /= 10;
     }
-    return sum;
+    return sumD;
+}
+
+void dfs(int number, int numDigit, int sumD) {
+    if (sumD > m) return;
+    if (sumD + 9 * (k - numDigit) < m) return;
+    if (numDigit == k) {
+        if (sumD != m) return;
+        int n = getDigitSum(number + 1);
+        int x = gcd(m, n);
+        if (x > 2 && isPrime(x)) {
+            ans.push_back({n,number});
+        }
+        return;
+    }
+    for (int i = 0; i <= 9; i++) {
+        dfs(number * 10 + i, numDigit + 1, sumD + i);
+    }
 }
 
 int main() {
@@ -39,21 +58,17 @@ int main() {
     for (int i = 1; i <= n; i++) {
         printf("Case %d\n", i);
         scanf("%d%d", &k, &m);
-        int minValue = pow(10, k - 1 - 2);
-        int maxValue = pow(10, k - 2) - 1;
-        bool flag = false;
-        for (int j = minValue; j <= maxValue; j++) {
-            int dm = getSum(j) + 18, dn = getSum(j * 100 + 99 + 1);
-            if (dm == m) {
-                int div = getDivisor(dm, dn);
-                if (isPrime(div) && div > 2) {
-                    flag = true;
-                    printf("%d %d\n", dn, j * 100 + 99);
-                }
-            }
+        ans.clear();
+        for (int j = 1; j <= 9; j++) {
+            dfs(j, 1, j);
         }
-        if (!flag) {
+        if (ans.size() == 0) {
             printf("No Solution\n");
+        } else {
+            sort(ans.begin(), ans.end(), cmp);
+            for (auto it : ans) {
+                printf("%d %d\n", it.n, it.v);
+            }
         }
     }
     return 0;

@@ -9,11 +9,15 @@ struct node {
 } Node[maxn];
 int n;
 
+bool isOperator(string str) {
+    return str == "-" || str == "/" || str == "*" || str == "+";
+}
+
 void postOrder(int root) {
     if (root == -1) return;
     cout << "(";
     postOrder(Node[root].lc);
-    if (Node[root].v == "-" && Node[root].lc == -1) {
+    if (isOperator(Node[root].v) && Node[root].lc == -1) {
         cout << Node[root].v;
         postOrder(Node[root].rc);
     } else {
