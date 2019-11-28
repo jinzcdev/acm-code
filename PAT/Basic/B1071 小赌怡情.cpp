@@ -9,10 +9,6 @@ int main() {
     }
     while (k--) {
         scanf("%d%d%d%d", &n1, &b, &cost, &n2);
-        if (t <= 0) {
-            printf("Game Over.\n");
-            continue;
-        }
         if (t < cost) {
             printf("Not enough tokens.  Total = %d.\n", t);
             continue;
@@ -23,7 +19,7 @@ int main() {
                 printf("Win %d!  Total = %d.\n", cost, t);
             } else {
                 t -= cost;
-                printf("Lose %d!  Total = %d.\n", cost, t < 0 ? 0 : t);
+                printf("Lose %d.  Total = %d.\n", cost, t);
             }
         } else if (n1 < n2) {
             if (b == 1) {
@@ -31,8 +27,12 @@ int main() {
                 printf("Win %d!  Total = %d.\n", cost, t);
             } else {
                 t -= cost;
-                printf("Lose %d!  Total = %d.\n", cost, t < 0 ? 0 : t);
+                printf("Lose %d!  Total = %d.\n", cost, t);
             }
+        }
+        if (t <= 0) {
+            printf("Game Over.\n");
+            break;
         }
     }
     return 0;
