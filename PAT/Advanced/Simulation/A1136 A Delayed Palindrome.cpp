@@ -1,10 +1,7 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805345732378624
 #include <iostream>
-#include <vector>
 #include <algorithm>
 using namespace std;
-const int maxn = 1010;
-
 string reverseNumber(string number) {
     reverse(number.begin(), number.end());
     return number;
@@ -28,7 +25,7 @@ string getSum(string number, string rnumber) {
         sum[i] = rs % 10 + '0';
         k = rs / 10;
     }
-    if (k != 0) sum.insert(sum.begin(), k + '0');
+    if (k != 0) sum = "1" + sum;
     return sum;
 }
 
@@ -42,14 +39,14 @@ int main() {
         while (!isPld(number)) {
             if (cnt++ == 10) {
                 printf("Not found in 10 iterations.\n");
-                break;
+                return 0;
             }
             string rnumber = reverseNumber(number);
-            cout << number << " + " << rnumber << " = ";
-            number =  getSum(number, rnumber);
-            cout << number << endl;
+            printf("%s + %s = ", number.c_str(), rnumber.c_str());
+            number = getSum(number, rnumber);
+            printf("%s\n", number.c_str());
         }
-        if (cnt < 10) cout << number << " is a palindromic number." << endl;
+        printf("%s is a palindromic number.\n", number.c_str());
     }
     return 0;
 }
