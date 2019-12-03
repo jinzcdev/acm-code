@@ -1,25 +1,34 @@
 // https://pintia.cn/problem-sets/994805260223102976/problems/994805304020025344
-#include <cstdio>
-#include <algorithm>
+#include <iostream>
+#include <map>
 using namespace std;
-struct gesture {
-    char g;
-    int count;
-} p1[], p2;
-
-char jia, yi;
-bool isJiaWin() {
-    if ((jia == 'C' && yi == 'J') || (jia == 'J' && yi == 'B') || (jia == 'B' && yi == 'C')) return true;
-    else return false;
+bool check(char a, char b) {
+    return (a == 'C' && b == 'J') || (a == 'J' && b == 'B') || (a == 'B' && b == 'C');
 }
-
-int main(){
-    int n;
+int main() {
+    int n, cntA = 0, cntB = 0, cntP = 0;
+    map<char, int> ma, mb;
     scanf("%d", &n);
-    for (int i = 0; i < n; i++){
-        scanf("%c %c", &jia, &yi);
-        if (isJiaWin()) win[0][jia - 'A']++;
-        else win[1][yi - 'A']++;
+    char chA, chB;
+    while (n--) {
+        getchar();
+        scanf("%c %c", &chA, &chB);
+        if (chA == chB) cntP++;
+        else if (check(chA, chB)) {
+            cntA++;
+            ma[chA]++;
+        } else {
+            cntB++;
+            mb[chB]++;
+        }
     }
-
+    printf("%d %d %d\n", cntA, cntP, cntB);
+    printf("%d %d %d\n", cntB, cntP, cntA);
+    chA = chB = 'B';
+    if (ma['B'] < ma['C']) chA = 'C';
+    if (ma['B'] < ma['J'] && ma['C'] < ma['J']) chA = 'J';
+    if (mb['B'] < mb['C']) chB = 'C';
+    if (mb['B'] < mb['J'] && mb['C'] < mb['J']) chB = 'J';
+    printf("%c %c", chA, chB);
+    return 0;
 }
