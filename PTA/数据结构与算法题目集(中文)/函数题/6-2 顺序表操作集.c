@@ -4,7 +4,7 @@
 
 #define MAXSIZE 5
 #define ERROR -1
-// typedef enum {false, true} bool;
+typedef enum {false, true} bool;
 typedef int ElementType;
 typedef int Position;
 typedef struct LNode *List;
