@@ -1,40 +1,54 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805417945710592
-#include <cstdio>
-#include <cstring>
-#include <set>
+#include <iostream>
 #include <stack>
+#define lowbit(x) ((x) & (-x))
 using namespace std;
-set<int> num;
+const int maxn = 100010;
+int c[maxn] = {0};
 stack<int> s;
-int main(){
-    char cmd[15];
-    int n, x;
+void add(int x, int v) {
+    while (x < maxn) {
+        c[x] += v;
+        x += lowbit(x);
+    }
+}
+int getSum(int x) {
+    int sum = 0;
+    while (x >= 1) {
+        sum += c[x];
+        x -= lowbit(x);
+    }
+    return sum;
+}
+void PeekMedian() {
+    int left = 1, right = maxn, mid, k = (s.size() + 1) / 2;
+    while (left < right) {
+        mid = (left + right) / 2;
+        if (getSum(mid) >= k) right = mid;
+        else left = mid + 1;
+    }
+    printf("%d\n", left);
+}
+int main() {
+    int n, k;
     scanf("%d", &n);
-    for (int i = 0; i < n; i++){
-        scanf("%s", cmd);
-        if (strcmp(cmd, "Pop") == 0) {
+    char op[15];
+    for (int i = 0; i < n; i++) {
+        scanf("%s", op);
+        if (op[1] == 'u') {
+            scanf("%d", &k);
+            s.push(k);
+            add(k, 1);
+        } else if (op[1] == 'o') {
             if (s.empty()) printf("Invalid\n");
             else {
+                add(s.top(), -1);
                 printf("%d\n", s.top());
-                num.erase(s.top());
                 s.pop();
             }
-        } else if (strcmp(cmd, "Push") == 0) {
-            scanf("%d", &x);
-            num.insert(x);
-            s.push(x);
         } else {
-            if (s.size() == 0) printf("Invalid\n");
-            else {
-                int mid = 0, size = (int)num.size(), index;
-                if (size % 2 == 0) index = size / 2;
-                else index = (size + 1) / 2;
-                set<int>::iterator it = num.begin();
-                while (it != num.end() && mid++ < index - 1) {
-                    it++;
-                }
-                printf("%d\n", *it);
-            }
+            if (s.empty()) printf("Invalid\n");
+            else PeekMedian();
         }
     }
     return 0;
