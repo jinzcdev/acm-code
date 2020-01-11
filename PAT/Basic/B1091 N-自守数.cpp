@@ -1,6 +1,6 @@
 // https://pintia.cn/problem-sets/994805260223102976/problems/1071785664454127616
-#include <iostream>
 #include <cmath>
+#include <iostream>
 using namespace std;
 int getLen(int number) {
     int cnt = 0;
@@ -20,8 +20,7 @@ int main() {
         bool flag = false;
         for ( ; n <= 9; n++) {
             rs = n * product;
-            int len = getLen(k);
-            int temp = rs % (int)pow(10, len);
+            int len = getLen(k), temp = rs % (int)pow(10, len);
             if (temp == k) {
                 flag = true;
                 break;

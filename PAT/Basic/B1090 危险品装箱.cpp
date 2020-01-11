@@ -31,6 +31,6 @@ int main() {
             if (!flag) break;
         }
         printf("%s\n", flag ? "Yes" : "No");
-    }    
+    }
     return 0;
 }
