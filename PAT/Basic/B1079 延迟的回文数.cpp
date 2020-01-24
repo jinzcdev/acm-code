@@ -1,11 +1,9 @@
 // https://pintia.cn/problem-sets/994805260223102976/problems/994805261754023936
-#include <iostream>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 bool isPalindrome(string str) {
-    for (int i = 0; i < str.length() / 2; i++) {
+    for (int i = 0; i < str.length() / 2; i++)
         if (str[i] != str[str.length() - i - 1]) return false;
-    }
     return true;
 }
 
