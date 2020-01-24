@@ -1,18 +1,18 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805343236767744
 #include <bits/stdc++.h>
 using namespace std;
-bool isPrime(int x) {
+bool isprime(int x) {
     if (x <= 1) return false;
-    for (int i = 2; i * i <= x; i++) {
+    for (int i = 2; i * i <= x; i++)
         if (x % i == 0) return false;
-    }
     return true;
 }
 int main() {
-    int msize, n, m, key;
+    int msize, n, m;
     scanf("%d%d%d", &msize, &n, &m);
-    while (!isPrime(msize)) msize++;
+    while (!isprime(msize)) msize++;
     vector<int> hash(msize);
+    int key;
     for (int i = 0; i < n; i++) {
         scanf("%d", &key);
         bool isfound = false;
