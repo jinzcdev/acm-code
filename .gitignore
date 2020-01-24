@@ -53,3 +53,5 @@ a
 /.vscode
 /.DS_Store
 /**/a.dSYM
+*/**/.DS_Store
+# PAT/Advanced/Graph/.DS_Store
