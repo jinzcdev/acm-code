@@ -1,4 +1,55 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/1071785408849047552
+#include <bits/stdc++.h>
+using namespace std;
+vector<int> heap, path;
+int n;
+void dfs(int i) {
+    if (i > n) return;
+    if (i * 2 > n) {
+        path.push_back(heap[i]);
+        for (int i = 0; i < path.size(); i++) {
+            if (i != 0) printf(" ");
+            printf("%d", path[i]);
+        }
+        printf("\n");
+        path.pop_back();
+        return;
+    }
+    path.push_back(heap[i]);
+    dfs(i * 2 + 1);
+    dfs(i * 2);
+    path.pop_back();
+}
+int main() {
+    scanf("%d", &n);
+    heap.resize(n + 1);
+    for (int i = 1; i <= n; i++) scanf("%d", &heap[i]);
+    dfs(1);
+    bool isMaxHeap = true, isMinHeap = true;
+    for (int i = 2; i <= n; i++) {
+        if (heap[i] > heap[i / 2]) isMaxHeap = false;
+        if (heap[i] < heap[i / 2]) isMinHeap = false;
+    }
+    if (isMaxHeap) printf("Max Heap\n");
+    else if (isMinHeap) printf("Min Heap\n");
+    else printf("Not Heap\n");
+    return 0;
+}
+
+/*
+bool isMaxHeap(int i) {
+    if (i > n || i * 2 > n) return true;  // 空树或者没有孩子结点为true
+    if ((heap[i * 2] > heap[i]) || (i * 2 + 1 <= n && heap[i * 2 + 1] > heap[i])) return false;
+    return isMaxHeap(i * 2) && isMaxHeap(i * 2 + 1);
+}
+bool isMinHeap(int i) {
+    if (i > n || i * 2 > n) return true;  // 空树或者没有孩子结点为true
+    if ((heap[i * 2] < heap[i]) || (i * 2 + 1 <= n && heap[i * 2 + 1] < heap[i])) return false;
+    return isMinHeap(i * 2) && isMinHeap(i * 2 + 1);
+}
+*/
+
+/*
 #include <cstdio>
 #include <queue>
 #include <vector>
@@ -71,3 +122,4 @@ int main() {
     else printf("Not Heap\n");
     return 0;
 }
+*/
