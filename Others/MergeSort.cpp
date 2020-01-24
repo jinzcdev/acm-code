@@ -3,8 +3,7 @@
  */
 #include <bits/stdc++.h>
 using namespace std;
-void merge(vector<int> &a, vector<int> &temp, int left, int leftEnd,
-           int right) {
+void merge(vector<int> &a, vector<int> &temp, int left, int leftEnd, int right) {
     int i = left, j = leftEnd + 1, tempPos = left;
     while (i <= leftEnd && j <= right) {
         temp[tempPos++] = a[i] <= a[j] ? a[i++] : a[j++];
