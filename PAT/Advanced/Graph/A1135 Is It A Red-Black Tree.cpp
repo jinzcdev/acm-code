@@ -1,72 +1,52 @@
-// https://pintia.cn/problem-sets/994805342720868352/problems/994805346063728640
 #include <bits/stdc++.h>
 using namespace std;
 struct node {
     int data;
-    node *lc, *rc;
-    node(int x) {
-        data = x;
-        lc = rc = NULL;
-    }
+    node *left, *right;
+    node(int _data) : data(_data) { left = right = NULL; }
 };
-
 void insert(node*& root, int x) {
     if (root == NULL) {
         root = new node(x);
         return;
-    } else if (abs(root->data) > abs(x)) {
-        insert(root->lc, x);
-    } else {
-        insert(root->rc, x);
     }
+    if (abs(x) < abs(root->data)) insert(root->left, x);
+    else insert(root->right, x);
 }
-
-bool flag1, flag2;
-int cntBN = -1;
-void judge(node* root, int cnt) {
+bool a, b;
+int cntBlack = -1;
+void dfs(node* root, int cnt) {
     if (root == NULL) {
-        if (cntBN == -1) cntBN = cnt;
-        else if (cntBN != cnt) flag2 = false;
+        if (cntBlack == -1) cntBlack = cnt;
+        else if (cntBlack != cnt) b = false;
         return;
     }
     if (root->data < 0) {
-        if ((root->lc != NULL && root->lc->data < 0) ||
-            (root->rc != NULL && root->rc->data < 0)) {
-            flag1 = false;
-        }
+        if ((root->left != NULL && root->left->data < 0) ||
+            (root->right != NULL && root->right->data < 0))
+            a = false;
     }
-    judge(root->lc, root->data > 0 ? cnt + 1 : cnt);
-    judge(root->rc, root->data > 0 ? cnt + 1 : cnt);
+    dfs(root->left, root->data > 0 ? cnt + 1 : cnt);
+    dfs(root->right, root->data > 0 ? cnt + 1 : cnt);
 }
-
 int main() {
-    int k, n, temp;
-    scanf("%d", &k);
+    int k, n, x;
+    cin >> k;
     while (k--) {
-        scanf("%d", &n);
+        cin >> n;
         node* root = NULL;
-        flag1 = flag2 = true;
-        cntBN = -1;
-        while (n--) {
-            scanf("%d", &temp);
-            insert(root, temp);
+        for (int i = 0; i < n; i++) {
+            scanf("%d", &x);
+            insert(root, x);
         }
         if (root->data < 0) {
             printf("No\n");
         } else {
-            judge(root, 0);
-            if (flag1 && flag2) printf("Yes\n");
-            else printf("No\n");
+            a = b = true;
+            cntBlack = -1;
+            dfs(root, 1);
+            printf("%s\n", a && b ? "Yes" : "No");
         }
     }
     return 0;
 }
-
-/*
-bool judge1(node* root) {
-    if (root == NULL) return true;
-    if (root->data < 0 && ((root->lc != NULL && root->lc->data < 0) ||
-                           (root->rc != NULL && root->rc->data < 0)))
-        return false;
-    return judge1(root->lc) && judge1(root->rc);
-}*/
