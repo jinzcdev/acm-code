@@ -1,16 +1,14 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805347145859072
-#include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
 int main() {
     int n;
+    string z;
     cin >> n;
     while (n--) {
-        string s;
-        cin >> s;
-        int number = stoi(s), a = stoi(s.substr(0, s.length() / 2)),
-            b = stoi(s.substr(s.length() / 2));
-        if (a * b != 0 && number % (a * b) == 0) printf("Yes\n");
-        else printf("No\n");
+        cin >> z;
+        int iz = stoi(z), a = stoi(z.substr(0, z.length() / 2)), b = stoi(z.substr(z.length() / 2));
+        printf("%s\n", a != 0 && b != 0 && iz % (a * b) == 0 ? "Yes" : "No");
     }
     return 0;
 }
