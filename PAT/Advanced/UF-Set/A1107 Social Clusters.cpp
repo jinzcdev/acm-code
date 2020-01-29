@@ -1,6 +1,47 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805361586847744
-#include <cstdio>
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 1010;
+int father[N];
+int findFather(int x) {
+    if (x == father[x]) return x;
+    int fa = findFather(father[x]);
+    father[x] = fa;
+    return fa;
+}
+void uni(int a, int b) {
+    int faA = findFather(a);
+    int faB = findFather(b);
+    if (faA != faB) father[faA] = faB;
+}
+int main() {
+    for (int i = 0; i < N; i++) father[i] = i;
+    int n, k, h;
+    map<int, int> hobbyToId;
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i++) {
+        scanf("%d:", &k);
+        for (int j = 0; j < k; j++) {
+            scanf("%d", &h);
+            if (hobbyToId[h] != 0) uni(i, hobbyToId[h]);
+            else hobbyToId[h] = i;
+        }
+    }
+    map<int, int> mcnt;
+    for (int i = 1; i <= n; i++) mcnt[findFather(i)]++;
+    vector<int> ans;
+    for (auto it : mcnt) ans.push_back(it.second);
+    printf("%d\n", ans.size());
+    sort(ans.begin(), ans.end());
+    for (int i = ans.size() - 1; i >= 0; i--) {
+        printf("%d", ans[i]);
+        if (i != 0) printf(" ");
+    }
+    return 0;
+}
+/*
 #include <algorithm>
+#include <cstdio>
 #include <vector>
 using namespace std;
 const int maxn = 1010;
@@ -40,14 +81,15 @@ int main(){
         int h;
         for (int j = 0; j < k; j++){
             scanf("%d", &h);
-            if (hobby[h] == 0){              // 如果该兴趣无人喜欢, 则令people.i喜欢该活动h
-                hobby[h] = i;
+            if (hobby[h] == 0){              // 如果该兴趣无人喜欢,
+则令people.i喜欢该活动h hobby[h] = i;
             }
             Union(i, findFather(hobby[h])); // 合并
         }
     }
     for (int i = 1; i <= n; i++){
-        isRoot[findFather(i)]++;            // 根节点数量+1, 表示某个集合内结点个数
+        isRoot[findFather(i)]++;            // 根节点数量+1,
+表示某个集合内结点个数
     }
     vector<int> ans;
     for (int i = 1; i <= n; i++){
@@ -64,3 +106,4 @@ int main(){
     }
     return 0;
 }
+*/
