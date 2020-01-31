@@ -1,4 +1,4 @@
-// https://pintia.cn/problem-sets/1203317812083417088/problems/1203317880077287427
+// https://pintia.cn/problem-sets/1203317538312806400/problems/1203317626619691008
 #include <bits/stdc++.h>
 using namespace std;
 string letter[26][7];
