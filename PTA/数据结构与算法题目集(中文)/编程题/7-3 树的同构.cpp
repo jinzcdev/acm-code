@@ -12,12 +12,6 @@ bool isIsomorphic(int a, int b) {
     return (isIsomorphic(bt1[a].left, bt2[b].left) && isIsomorphic(bt1[a].right, bt2[b].right)) ||
            (isIsomorphic(bt1[a].left, bt2[b].right) && isIsomorphic(bt1[a].right, bt2[b].left));
 }
-void inorder(int root) {
-    if (root == -1) return;
-    inorder(bt2[root].left);
-    cout << bt2[root].data << " ";
-    inorder(bt2[root].right);
-}
 bool vis[15];
 int main() {
     int n, m, a, b, root1 = -1, root2 = -1;
