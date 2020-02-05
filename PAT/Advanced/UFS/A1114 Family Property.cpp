@@ -22,46 +22,36 @@ void uni(int a, int b) {
     int faB = findFather(b);
     if (faA != faB) father[faA] = faB;
 }
-int pos = 1;
-map<int, int> numToId, idToNum;
-void change(int &id) {
-    if (idToNum[id] == 0) {
-        numToId[pos] = id;
-        idToNum[id] = pos;
-        id = pos++;
-    } else {
-        id = idToNum[id];
-    }
-}
 int main() {
     for (int i = 0; i < N; i++) father[i] = i;
     int n, estate[N] = {0}, area[N] = {0}, id, fa, mo, child, k;
     scanf("%d", &n);
+    unordered_set<int> v;
     for (int i = 0; i < n; i++) {
         scanf("%d%d%d%d", &id, &fa, &mo, &k);
-        change(id);
+        v.insert(id);
         if (fa != -1) {
-            change(fa);
             uni(id, fa);
+            v.insert(fa);
         }
         if (mo != -1) {
-            change(mo);
             uni(id, mo);
+            v.insert(mo);
         }
         for (int j = 0; j < k; j++) {
             scanf("%d", &child);
-            change(child);
             uni(id, child);
+            v.insert(child);
         }
         scanf("%d%d", &estate[id], &area[id]);
     }
     map<int, node> family;
-    for (int i = 1; i < pos; i++) {
-        int fa = findFather(i);  // int fa = father[i]; (x)
-        family[fa].id = min(family[fa].id, numToId[i]);
+    for (auto it : v) {
+        int fa = findFather(it);  // int fa = father[i]; (x)
+        family[fa].id = min(family[fa].id, it);
         family[fa].cntMember++;
-        family[fa].estate += estate[i];
-        family[fa].area += area[i];
+        family[fa].estate += estate[it];
+        family[fa].area += area[it];
     }
     vector<node> ans;
     for (auto it : family) {
