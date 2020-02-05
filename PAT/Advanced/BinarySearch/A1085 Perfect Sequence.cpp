@@ -1,33 +1,20 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805381845336064
-#include <cstdio>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
-const int maxn = 100010;
-int a[maxn], n, p;
-
-int binarySearch(int i, long long x) {
-    if (a[n - 1] <= x) return n;
-    int l = i + 1, r = n - 1;
-    while (l < r) {
-        int mid = (l + r) / 2;
-        if (a[mid] <= x) l = mid + 1;
-        else r = mid;
-    }
-    return l;
-}
-
 int main() {
+    int n, p;
     scanf("%d%d", &n, &p);
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) scanf("%d", &a[i]);
+    sort(a.begin(), a.end());
+    int ans = 0;
     for (int i = 0; i < n; i++) {
-        scanf("%d", a + i);
+        int j = i + ans;
+        for (; j < n; j++) {
+            if (a[j] > a[i] * p) break;
+            ans = max(ans, j - i + 1);
+        }
     }
-    sort(a, a + n);
-    int ans = 1;
-    for (int i = 0; i < n; i++) {
-        int j = binarySearch(i, (long long)a[i] * p);
-        // int j = upper_bound(a + i + 1, a + n, (long long)a[i] * p) - a;
-        ans = max(ans, j - i);
-    }
-    printf("%d\n", ans);
+    printf("%d", ans);
     return 0;
 }
