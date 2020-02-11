@@ -1,32 +1,21 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805466364755968
-#include <cstdio>
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
 int main() {
-    int n, temp;
-    vector<long int> nums1, nums2;
+    int n;
     scanf("%d", &n);
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &temp);
-        nums1.push_back(temp);
-    }
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) scanf("%d", &a[i]);
     scanf("%d", &n);
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &temp);
-        nums2.push_back(temp);
+    vector<int> b(n);
+    for (int i = 0; i < n; i++) scanf("%d", &b[i]);
+    int pos = (a.size() + b.size() + 1) / 2, i = 0, j = 0, cnt = 0, ans;
+    while (i < a.size() && j < b.size()) {
+        ans = a[i] <= b[j] ? a[i++] : b[j++];
+        if (++cnt == pos) break;
     }
-    int len = (nums1.size() + nums2.size() + 1) / 2;    // len 为中值的位序(start from 1)
-    int i = 0, j = 0, cnt = 0;  // cnt记录个数, 当cnt == len时退出循环
-    long int ans;
-    while (cnt < len) {
-        if (i < nums1.size() && j < nums2.size()) {
-            if (nums1[i] <= nums2[j]) ans = nums1[i++];
-            else ans = nums2[j++];
-        } 
-        else if (i >= nums1.size()) ans = nums2[j++];
-        else if (j >= nums2.size()) ans = nums1[i++];
-        cnt++;
-    }
-    printf("%ld", ans);
+    for (; i < a.size() && cnt != pos; i++, cnt++) ans = a[i];
+    for (; j < b.size() && cnt != pos; j++, cnt++) ans = b[j];
+    printf("%d", ans);
     return 0;
 }
