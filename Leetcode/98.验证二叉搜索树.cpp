@@ -68,18 +68,19 @@ struct TreeNode {
  */
 class Solution {
    public:
-    // bool solve(TreeNode* root, long low, long high) {
-    //     if (root == NULL) return true;
-    //     if (root->val <= low || root->val >= high) return false;
-    //     return solve(root->left, low, root->val) && solve(root->right, root->val, high);
-    // }
-    // bool isValidBST(TreeNode* root) { return solve(root, LONG_MIN, LONG_MAX); }
+    bool solve(TreeNode* root, long low, long high) {
+        if (root == NULL) return true;
+        if (root->val <= low || root->val >= high) return false;
+        return solve(root->left, low, root->val) &&
+               solve(root->right, root->val, high);
+    }
+    bool isValidBST(TreeNode* root) { return solve(root, LONG_MIN, LONG_MAX); }
     bool isValidBST(TreeNode* root) {
         stack<TreeNode*> s;
         TreeNode* p = root;
         long preValue = LONG_MIN;
         while (!s.empty() || p != NULL) {
-            for (;p != NULL; p = p->left) s.push(p);
+            for (; p != NULL; p = p->left) s.push(p);
             p = s.top();
             s.pop();
             if (p->val <= preValue) return false;
@@ -87,6 +88,21 @@ class Solution {
             p = p->right;
         }
         return true;
+    }
+
+    bool isValidBST(TreeNode* root) {
+        if (root == NULL) return true;
+        TreeNode* p = root->left;
+        if (p) {
+            while (p->right) p = p->right;
+            if (root->val <= p->val) return false;
+        }
+        p = root->right;
+        if (p) {
+            while (p->left) p = p->left;
+            if (root->val >= p->val) return false;
+        }
+        return isValidBST(root->left) && isValidBST(root->right);
     }
 };
 // @lc code=end
