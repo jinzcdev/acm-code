@@ -4,7 +4,7 @@
 
 #define MAXSIZE 5
 #define ERROR -1
-typedef enum {false, true} bool;
+typedef enum { false, true } bool;
 typedef int ElementType;
 typedef int Position;
 typedef struct LNode *List;
@@ -13,13 +13,12 @@ struct LNode {
     Position Last; /* 保存线性表中最后一个元素的位置 */
 };
 
-List MakeEmpty(); 
-Position Find( List L, ElementType X );
-bool Insert( List L, ElementType X, Position P );
-bool Delete( List L, Position P );
+List MakeEmpty();
+Position Find(List L, ElementType X);
+bool Insert(List L, ElementType X, Position P);
+bool Delete(List L, Position P);
 
-int main()
-{
+int main() {
     List L;
     ElementType X;
     Position P;
@@ -27,27 +26,22 @@ int main()
 
     L = MakeEmpty();
     scanf("%d", &N);
-    while ( N-- ) {
+    while (N--) {
         scanf("%d", &X);
-        if ( Insert(L, X, 0)==false )
-            printf(" Insertion Error: %d is not in.\n", X);
+        if (Insert(L, X, 0) == false) printf(" Insertion Error: %d is not in.\n", X);
     }
     scanf("%d", &N);
-    while ( N-- ) {
+    while (N--) {
         scanf("%d", &X);
         P = Find(L, X);
-        if ( P == ERROR )
-            printf("Finding Error: %d is not in.\n", X);
-        else
-            printf("%d is at position %d.\n", X, P);
+        if (P == ERROR) printf("Finding Error: %d is not in.\n", X);
+        else printf("%d is at position %d.\n", X, P);
     }
     scanf("%d", &N);
-    while ( N-- ) {
+    while (N--) {
         scanf("%d", &P);
-        if ( Delete(L, P)==false )
-            printf(" Deletion Error.\n");
-        if ( Insert(L, 0, P)==false )
-            printf(" Insertion Error: 0 is not in.\n");
+        if (Delete(L, P) == false) printf(" Deletion Error.\n");
+        if (Insert(L, 0, P) == false) printf(" Insertion Error: 0 is not in.\n");
     }
     return 0;
 }
@@ -58,17 +52,13 @@ List MakeEmpty() {
     return L;
 }
 
-Position Find( List L, ElementType X ) {
-    int i, ans = ERROR;
-    for (i = 0; i <= L->Last; i++) {
-        if (L->Data[i] == X) {
-            ans = i;
-        }
-    }
-    return ans;
+Position Find(List L, ElementType X) {
+    for (int i = 0; i <= L->Last; i++)
+        if (L->Data[i] == X) return i;
+    return ERROR;
 }
 
-bool Insert( List L, ElementType X, Position P ) {
+bool Insert(List L, ElementType X, Position P) {
     if (L->Last == MAXSIZE - 1) {
         printf("FULL");
         return false;
@@ -85,15 +75,14 @@ bool Insert( List L, ElementType X, Position P ) {
     return true;
 }
 
-bool Delete( List L, Position P ) {
+bool Delete(List L, Position P) {
     if (P < 0 || P > L->Last) {
         printf("POSITION %d EMPTY", P);
         return false;
     }
     int temp = L->Data[P], i;
-    for (i = P + 1; i <= L->Last; i++) {
+    for (i = P + 1; i <= L->Last; i++)
         L->Data[i - 1] = L->Data[i];
-    }
     L->Last--;
     return true;
 }
