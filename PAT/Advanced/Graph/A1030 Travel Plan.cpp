@@ -1,71 +1,126 @@
-// https://pintia.cn/problem-sets/994805342720868352/problems/994805464397627392
-#include <cstdio>
-#include <cstring>
-#include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
-const int maxn = 510;
-const int INF = 0x7FFFFFFF;
-
-int n, m, start, dest;
-int G[maxn][maxn], cost[maxn][maxn], pre[maxn];
-int d[maxn], c[maxn];
-bool vis[maxn] = {false};
-
-void Dijkstra(int s){
-    fill(d, d + maxn, INF);
-    fill(c, c + maxn, INF);
+const int N = 510;
+const int INF = 0x7fffffff;
+int n, m, st, dest, e[N][N], cost[N][N] = {0}, d[N];
+vector<int> path, tempPath, pre[N];
+int minCost = INF;
+void dfs(int u) {
+    tempPath.push_back(u);
+    if (u == st) {
+        int tempCost = 0;
+        for (int i = 0; i < tempPath.size() - 1; i++)
+            tempCost += cost[tempPath[i]][tempPath[i + 1]];
+        if (tempCost < minCost) {
+            minCost = tempCost;
+            path = tempPath;
+        }
+        tempPath.pop_back();
+        return;
+    }
+    for (auto it : pre[u]) dfs(it);
+    tempPath.pop_back();
+}
+void dijkstra(int s) {
+    fill(d, d + N, INF);
     d[s] = 0;
-    c[s] = 0;
-    for (int i = 0; i < n; i++)
-        pre[i] = i;
-    for (int i = 0; i < n; i++){
+    bool vis[N] = {false};
+    while (true) {
         int u = -1, MIN = INF;
-        for (int j = 0; j < n; j++){
-            if (!vis[j] && d[j] < MIN) {
-                u = j;
-                MIN = d[j];
+        for (int i = 0; i < n; i++) {
+            if (!vis[i] && d[i] < MIN) {
+                MIN = d[i];
+                u = i;
             }
         }
         if (u == -1) return;
         vis[u] = true;
-        for (int v = 0; v < n; v++){
-            if (!vis[v] && G[u][v] < INF) {
-                if (d[u] + G[u][v] < d[v]) {    // 短路径优先, 若存在更短路径则更新新路径及路径花费
-                    d[v] = d[u] + G[u][v];
-                    c[v] = c[u] + cost[u][v];
-                    pre[v] = u;
-                } else if (d[u] + G[u][v] == d[v]) {    // 若路径相等,
-                    if (c[u] + cost[u][v] < c[v]) {     // 则花费小者优先
-                        c[v] = c[u] + cost[u][v];
-                        pre[v] = u;
-                    }
+        for (int v = 0; v < n; v++) {
+            if (!vis[v] && e[u][v] != INF) {
+                if (d[u] + e[u][v] < d[v]) {
+                    d[v] = d[u] + e[u][v];
+                    pre[v].clear();
+                    pre[v].push_back(u);
+                } else if (d[u] + e[u][v] == d[v]) {
+                    pre[v].push_back(u);
                 }
             }
-        }   
+        }
     }
 }
+int main() {
+    scanf("%d%d%d%d", &n, &m, &st, &dest);
+    int u, v, tdist, tcost;
+    fill(e[0], e[0] + N * N, INF);
+    for (int i = 0; i < m; i++) {
+        scanf("%d%d%d%d", &u, &v, &tdist, &tcost);
+        e[u][v] = e[v][u] = tdist;
+        cost[u][v] = cost[v][u] = tcost;
+    }
+    dijkstra(st);
+    dfs(dest);
+    for (int i = path.size() - 1; i >= 0; i--) printf("%d ", path[i]);
+    printf("%d %d", d[dest], minCost);
+    return 0;
+}
 
-void DFS(int v) {
-    if (v == start) {
-        printf("%d ",v);
+/*
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 510;
+const int INF = 0x7fffffff;
+int n, m, st, dest, e[N][N], cost[N][N] = {0}, d[N], c[N];
+vector<int> pre(N);
+int minCost = INF;
+void dfs(int u) {
+    if (u == st) {
+        printf("%d ", u);
         return;
     }
-    DFS(pre[v]);
-    printf("%d ", v);
+    dfs(pre[u]);
+    printf("%d ", u);
 }
-
-int main(){
-    scanf("%d%d%d%d", &n, &m, &start, &dest);
-    fill(G[0], G[0] + maxn * maxn, INF);
-    int u, v;
-    for (int i = 0; i < m; i++){
-        scanf("%d%d", &u, &v);
-        scanf("%d%d", &G[u][v], &cost[u][v]);
-        G[v][u] = G[u][v];
-        cost[v][u] = cost[u][v];
+void dijkstra(int s) {
+    fill(d, d + N, INF);
+    fill(c, c + N, INF);
+    d[s] = c[s] = 0;
+    bool vis[N] = {false};
+    while (true) {
+        int u = -1, MIN = INF;
+        for (int i = 0; i < n; i++) {
+            if (!vis[i] && d[i] < MIN) {
+                MIN = d[i];
+                u = i;
+            }
+        }
+        if (u == -1) return;
+        vis[u] = true;
+        for (int v = 0; v < n; v++) {
+            if (!vis[v] && e[u][v] != INF) {
+                if (d[u] + e[u][v] < d[v]) {
+                    d[v] = d[u] + e[u][v];
+                    c[v] = c[u] + cost[u][v];
+                    pre[v] = u;
+                } else if (d[u] + e[u][v] == d[v] && c[u] + cost[u][v] < c[v]) {
+                    c[v] = c[u] + cost[u][v];
+                    pre[v] = u;
+                }
+            }
+        }
     }
-    Dijkstra(start);
-    DFS(dest);
+}
+int main() {
+    scanf("%d%d%d%d", &n, &m, &st, &dest);
+    int u, v, tdist, tcost;
+    fill(e[0], e[0] + N * N, INF);
+    for (int i = 0; i < m; i++) {
+        scanf("%d%d%d%d", &u, &v, &tdist, &tcost);
+        e[u][v] = e[v][u] = tdist;
+        cost[u][v] = cost[v][u] = tcost;
+    }
+    dijkstra(st);
+    dfs(dest);
     printf("%d %d", d[dest], c[dest]);
     return 0;
 }
+*/

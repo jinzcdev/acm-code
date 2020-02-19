@@ -1,52 +1,91 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805424153280512
-#include <cstdio>
-#include <algorithm>
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
-const int maxn = 110;
+const int N = 110;
 struct node {
     int weight;
     vector<int> child;
-} Node[maxn];
-
-bool cmp(int a, int b){
-    return Node[a].weight > Node[b].weight;
-}
-
-int n, m, s;
-int path[maxn];
-void DFS(int root, int numNode, int sum){
-    if (sum > s) return;                    // 权值和大于要求权值, 返回上层
-    if (sum == s){
-        if (Node[root].child.size() != 0)
-            return;                         // 权值符合, 但当前非叶子结点, 返回上层
-        for (int i = 0; i < numNode; i++){
+} Node[N];
+int n, m, w;
+vector<int> path;
+bool cmp(int a, int b) { return Node[a].weight > Node[b].weight; }
+void dfs(int u, int sum) {
+    if (sum > w) return;
+    if (sum == w) {
+        if (Node[u].child.size() != 0) return;
+        for (int i = 0; i < path.size(); i++) {
+            if (i != 0) printf(" ");
             printf("%d", Node[path[i]].weight);
-            if (i < numNode - 1) printf(" ");
+        }
+        printf("\n");
+        return;
+    }
+    for (auto it : Node[u].child) {
+        path.push_back(it);
+        dfs(it, sum + Node[it].weight);
+        path.pop_back();
+    }
+}
+int main() {
+    scanf("%d%d%d", &n, &m, &w);
+    for (int i = 0; i < n; i++) scanf("%d", &Node[i].weight);
+    int parent, child, k;
+    while (m--) {
+        scanf("%d%d", &parent, &k);
+        for (int i = 0; i < k; i++) {
+            scanf("%d", &child);
+            Node[parent].child.push_back(child);
+        }
+        sort(Node[parent].child.begin(), Node[parent].child.end(), cmp);
+    }
+    path.push_back(0);
+    dfs(0, Node[0].weight);
+    return 0;
+}
+/*
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 110;
+struct node {
+    int weight;
+    vector<int> child;
+} Node[N];
+int n, m, w;
+vector<int> path;
+vector<vector<int> > ans;
+bool cmp(int a, int b) { return Node[a].weight > Node[b].weight; }
+void dfs(int u) {
+    path.push_back(u);
+    if (Node[u].child.size() == 0) {
+        int tempw = 0;
+        for (auto it : path) tempw += Node[it].weight;
+        if (tempw == w) ans.push_back(path);
+        path.pop_back();
+        return;
+    }
+    for (auto it : Node[u].child) dfs(it);
+    path.pop_back();
+}
+int main() {
+    scanf("%d%d%d", &n, &m, &w);
+    for (int i = 0; i < n; i++) scanf("%d", &Node[i].weight);
+    int parent, child, k;
+    while (m--) {
+        scanf("%d%d", &parent, &k);
+        for (int i = 0; i < k; i++) {
+            scanf("%d", &child);
+            Node[parent].child.push_back(child);
+        }
+        sort(Node[parent].child.begin(), Node[parent].child.end(), cmp);
+    }
+    dfs(0);
+    for (int i = 0; i < ans.size(); i++) {
+        for (int j = 0; j < ans[i].size(); j++) {
+            if (j != 0) printf(" ");
+            printf("%d", Node[ans[i][j]].weight);
         }
         printf("\n");
     }
-    for (int i = 0; i < Node[root].child.size(); i++){
-        path[numNode] = Node[root].child[i];
-        DFS(Node[root].child[i], numNode + 1, sum + Node[Node[root].child[i]].weight);   
-    }
-}
-
-int main(){
-    scanf("%d%d%d", &n, &m, &s);
-    for (int i = 0; i < n; i++){
-        scanf("%d", &Node[i].weight);
-    }
-    int parent, child, k;
-    for (int i = 0; i < m; i++){
-        scanf("%d%d", &parent, &k);
-        for (int j = 0; j < k; j++){
-            scanf("%d", &child);
-            Node[parent].child.push_back(child);
-            sort(Node[parent].child.begin(), Node[parent].child.end(), cmp); // 对孩子做排序(权值较小在前)
-        }
-    }
-    path[0] = 0;                    // 第一个路径为0 (rootIndex = 0)
-    DFS(0, 1, Node[0].weight);      // 从根结点开始深度优先搜索, 初始的结点数为1, 权值和为根结点权值
     return 0;
 }
+*/
