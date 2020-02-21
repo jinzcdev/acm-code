@@ -1,76 +1,54 @@
 #include <bits/stdc++.h>
 using namespace std;
-// int call[1010][1010] = {0};
-const int INF = 0x3f3f3f3f;
-const int N = 1010;
-int father[N];
-int k, n, m, caller, receiver, duration;
-void init() {
-    for (int i = 0; i < n; i++) {
-        father[i] = i;
-    }
-}
+int father[1010];
 int findFather(int x) {
-    if (x == father[x]) return x;
-    int fa = findFather(father[x]);
-    father[x] = fa;
-    return fa;
+    return x == father[x] ? x : father[x] = findFather(father[x]);
 }
 void uni(int a, int b) {
     int faA = findFather(a);
     int faB = findFather(b);
-    if (faA != faB) father[faA] = faB;
+    if (faA < faB) father[faB] = faA;
+    if (faA > faB) father[faA] = faB;
 }
 int main() {
+    for (int i = 0; i < 1010; i++) father[i] = i;
+    int k, n, m, a, b, time;
     scanf("%d%d%d", &k, &n, &m);
-    vector<map<int, int> > call(n + 1);
-    while (m--) {
-        scanf("%d%d%d", &caller, &receiver, &duration);
-        call[caller][receiver] += duration;
+    vector<map<int, int> > record(n + 1);
+    for (int i = 0; i < m; i++) {
+        scanf("%d%d%d", &a, &b, &time);
+        record[a][b] += time;
     }
     vector<int> suspect;
     for (int i = 1; i <= n; i++) {
+        if (record[i].size() <= k) continue;
         int callto = 0, callback = 0;
-        for (auto it : call[i]) {
+        for (auto it : record[i]) {
             if (it.second <= 5) {
                 callto++;
-                if (call[it.first][i] != 0) callback++;
+                if (record[it.first].find(i) != record[it.first].end()) callback++;
             }
         }
-        if (callto <= k) continue;
-        if (callback / callto * 1.0 <= 0.2) suspect.push_back(i);
+        if (callto > k && callback * 1.0 / callto <= 0.2) suspect.push_back(i);
     }
-    for (int i = 1; i <= suspect.size(); i++) {
-        father[i] = i;
+    if (suspect.size() == 0) {
+        printf("None\n");
+        return 0;
     }
-    sort(suspect.begin(), suspect.end());
-    int pos = 1;
-    map<int, int> numtoid, idtonum;
     for (int i = 0; i < suspect.size() - 1; i++) {
-        int a = idtonum[suspect[i]], b = idtonum[suspect[i + 1]];
-        if (a == 0) {
-            idtonum[suspect[i]] = pos;
-            numtoid[pos] = suspect[i];
-            a = pos++;
-        }
-        if (b == 0) {
-            idtonum[suspect[i + 1]] = pos;
-            numtoid[pos] = suspect[i + 1];
-            b = pos++;
-        }
-        if (call[suspect[i]][suspect[i + 1]] != 0 &&
-            call[suspect[i + 1]][suspect[i]] != 0) {
-            uni(a, b);
+        for (int j = i + 1; j < suspect.size(); j++) {
+            a = suspect[i]; b = suspect[j];
+            if (record[a][b] > 0 && record[b][a] > 0) uni(a, b);
         }
     }
-    map<int, vector<int> > ans;
-    for (int i = 1; i < pos; i++) {
-        ans[findFather(i)].push_back(numtoid[i]);
-    }
-    for (auto it : ans) {
-        for (int i = 0; i < it.second.size(); i++) {
+    map<int, vector<int> > mp;
+    for (auto it : suspect) mp[findFather(it)].push_back(it);
+    for (auto it : mp) {
+        vector<int> gang = move(it.second);
+        sort(gang.begin(), gang.end());
+        for (int i = 0; i < gang.size(); i++) {
             if (i != 0) printf(" ");
-            printf("%d", it.second[i]);
+            printf("%d", gang[i]);
         }
         printf("\n");
     }
