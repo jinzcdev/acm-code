@@ -1,47 +1,40 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805344776077312
 #include <bits/stdc++.h>
 using namespace std;
-vector<int> f[10000];
-struct node {
-    int a, b;
-};
-bool cmp(node a, node b) { return a.a != b.a ? a.a < b.a : a.b < b.b; }
+bool cmp(pair<int, int> a, pair<int, int> b) {
+    return a.first != b.first ? a.first < b.first : a.second < b.second;
+}
 int main() {
-    int n, m, k, a, b;
-    map<int, int> gender;
+    int n, m, k;
+    unordered_map<int, bool> isfriend;
+    vector<int> f[10000];
+    string a, b;
     scanf("%d%d", &n, &m);
     for (int i = 0; i < m; i++) {
-        string sa, sb;
-        cin >> sa >> sb;
-        a = abs(stoi(sa));
-        b = abs(stoi(sb));
-        if (sa[0] == '-') gender[a] = 1;
-        if (sb[0] == '-') gender[b] = 1;
-        f[a].push_back(b);
-        f[b].push_back(a);
+        cin >> a >> b;
+        int ia = abs(stoi(a)), ib = abs(stoi(b));
+        if (a.length() == b.length()) {
+            f[ia].push_back(ib);
+            f[ib].push_back(ia);
+        }
+        isfriend[ia * 10000 + ib] = isfriend[ib * 10000 + ia] = true;
     }
     scanf("%d", &k);
     while (k--) {
-        scanf("%d%d", &a, &b);
-        a = abs(a);
-        b = abs(b);
-        vector<node> ans;
-        for (auto c : f[a]) {
-            if (c == b) continue;
-            for (auto d : f[b]) {
-                if (d == a) continue;
-                if (find(f[c].begin(), f[c].end(), d) != f[c].end()) {
-                    if (gender[a] == gender[c] && gender[b] == gender[d]) {
-                        ans.push_back({c, d});
-                    }
+        cin >> a >> b;
+        int ia = abs(stoi(a)), ib = abs(stoi(b));
+        vector<pair<int, int> > ans;
+        for (auto ta : f[ia]) {
+            if (ta == ib) continue;
+            for (auto tb : f[ib]) {
+                if (tb != ia && isfriend[ta * 10000 + tb]) {
+                    ans.push_back({ta, tb});
                 }
             }
         }
         printf("%d\n", ans.size());
         sort(ans.begin(), ans.end(), cmp);
-        for (auto it : ans) {
-            printf("%04d %04d\n", it.a, it.b);
-        }
+        for (auto it : ans) printf("%04d %04d\n", it.first, it.second);
     }
     return 0;
 }
