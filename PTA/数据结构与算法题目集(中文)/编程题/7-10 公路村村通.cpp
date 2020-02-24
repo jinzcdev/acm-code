@@ -35,7 +35,6 @@ int main() {
         scanf("%d%d%d", &a, &b, &w);
         e[a][b] = e[b][a] = w;
     }
-    int ans = prime();
-    printf("%d\n", ans != -1 ? ans : -1);
+    printf("%d\n", prime());
     return 0;
 }
