@@ -1,121 +1,107 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805358663417856
 #include <bits/stdc++.h>
 using namespace std;
-const int INF = 0x3FFFFFFF;
-int G[510][510], T[510][510], d[510], t[510], num[510];
-vector<int> dispath, timepath, dispre(510), timepre(510);
-int st, dest, n, m;
-
-void dfsDis(int dest) {
-    if (dest == st) {
-        dispath.push_back(dest);
-        return;
-    }
-    dfsDis(dispre[dest]);
-    dispath.push_back(dest);
-}
-
-void dfsTime(int dest) {
-    if (dest == st) {
-        timepath.push_back(dest);
-        return;
-    }
-    dfsTime(timepre[dest]);
-    timepath.push_back(dest);
-}
-
-void dijkstraDis(int u) {
-    bool vis[510] = {false};
-    int temp[510];
-    fill(d, d + n, INF);
-    fill(temp, temp + n, INF);
-    d[u] = temp[u] = 0;
-    while (u != -1) {
-        vis[u] = true;
-        for (int v = 0; v < n; v++) {
-            if (vis[v] == false && G[u][v] != INF) {
-                if (d[u] + G[u][v] < d[v]) {
-                    d[v] = d[u] + G[u][v];
-                    dispre[v] = u;
-                    temp[v] = temp[u] + T[u][v];
-                } else if (d[v] == d[u] + G[u][v] && temp[u] + T[u][v] < temp[v]) {
-                    dispre[v] = u;
-                    temp[v] = T[u][v] + temp[u];
-                }
-            }
-        }
-        u = -1;
-        for (int i = 0, MIN = INF; i < n; i++) {
-            if (vis[i] == false && d[i] < MIN) {
+const int N = 510, INF = 0x3f3f3f3f;
+vector<int> e[N];
+int n, m, st, dest, Dist[N][N], Time[N][N], d[N], t[N], num[N];
+vector<int> dispre(N), timepre(N), dispath, timepath;
+void dijkstraDistance(int s) {
+    for (int i = 0; i < N; i++) dispre[i] = i;
+    fill(d, d + N, INF);
+    fill(t, t + N, INF);
+    d[s] = t[s] = 0;
+    bool vis[N] = {false};
+    while (true) {
+        int u = -1, MIN = INF;
+        for (int i = 0; i < n; i++) {
+            if (!vis[i] && d[i] < MIN) {
+                u = i;
                 MIN = d[i];
-                u = i;
             }
         }
-    }
-}
-
-void dijkstraTime(int u) {
-    bool vis[510] = {false};
-    fill(t, t + n, INF);
-    fill(num, num + n, INF);
-    t[u] = 0;
-    num[u] = 0;
-    while (u != -1) {
+        if (u == -1) break;
         vis[u] = true;
-        for (int v = 0; v < n; v++) {
-            if (vis[v] == false && T[u][v] != INF) {
-                if (t[u] + T[u][v] < t[v]) {
-                    t[v] = t[u] + T[u][v];
-                    timepre[v] = u;
-                    num[v] = num[u] + 1;
-                } else if (t[u] + T[u][v] == t[v] && num[u] + 1 < num[v]) {
-                    timepre[v] = u;
-                    num[v] = num[u] + 1;
+        for (auto v : e[u]) {
+            if (!vis[v]) {
+                if (d[u] + Dist[u][v] < d[v]) {
+                    d[v] = d[u] + Dist[u][v];
+                    t[v] = t[u] + Time[u][v];
+                    dispre[v] = u;
+                } else if (d[u] + Dist[u][v] == d[v] && t[u] + Time[u][v] < t[v]) {
+                    t[v] = t[u] + Time[u][v];
+                    dispre[v] = u;
                 }
             }
         }
-        u = -1;
-        for (int i = 0, MIN = INF; i < n; i++) {
-            if (vis[i] == false && t[i] < MIN) {
-                MIN = t[i];
+    }
+}
+void dijkstraTime(int s) {
+    for (int i = 0; i < N; i++) timepre[i] = i;
+    fill(num, num + N, INF);
+    fill(t, t + N, INF);
+    num[s] = t[s] = 0;
+    bool vis[N] = {false};
+    while (true) {
+        int u = -1, MIN = INF;
+        for (int i = 0; i < n; i++) {
+            if (!vis[i] && t[i] < MIN) {
                 u = i;
+                MIN = t[i];
+            }
+        }
+        if (u == -1) break;
+        vis[u] = true;
+        for (auto v : e[u]) {
+            if (!vis[v]) {
+                if (t[u] + Time[u][v] < t[v]) {
+                    t[v] = t[u] + Time[u][v];
+                    num[v] = num[u] + 1;
+                    timepre[v] = u;
+                } else if (t[u] + Time[u][v] == t[v] && num[u] + 1 < num[v]) {
+                    num[v] = num[u] + 1;
+                    timepre[v] = u;
+                }
             }
         }
     }
 }
-
+void dfsPath(vector<int> &pre, vector<int> &path, int u) {
+    if (u == st) {
+        path.push_back(u);
+        return;
+    }
+    dfsPath(pre, path, pre[u]);
+    path.push_back(u);
+}
 void printPath(vector<int> &path) {
     for (int i = 0; i < path.size(); i++) {
-        if (i != 0) printf(" ->");
-        printf(" %d", path[i]);
+        if (i != 0) printf(" -> ");
+        printf("%d", path[i]);
     }
+    printf("\n");
 }
-
 int main() {
-    fill(G[0], G[0] + 510 * 510, INF);
-    fill(T[0], T[0] + 510 * 510, INF);
     scanf("%d%d", &n, &m);
-    int u, v, oneway;
+    int a, b, oneway, len, time;
     for (int i = 0; i < m; i++) {
-        scanf("%d%d%d", &u, &v, &oneway);
-        scanf("%d%d", &G[u][v], &T[u][v]);
-        if (oneway == 0) {
-            G[v][u] = G[u][v];
-            T[v][u] = T[u][v];
-        }
+        scanf("%d%d%d%d%d", &a, &b, &oneway, &len, &time);
+        e[a].push_back(b);
+        if (oneway == 0) e[b].push_back(a);
+        Dist[a][b] = Dist[b][a] = len;
+        Time[a][b] = Time[b][a] = time;
     }
     scanf("%d%d", &st, &dest);
+    dijkstraDistance(st);
     dijkstraTime(st);
-    dijkstraDis(st);
-    dfsTime(dest);
-    dfsDis(dest);
+    dfsPath(dispre, dispath, dest);
+    dfsPath(timepre, timepath, dest);
     if (dispath == timepath) {
-        printf("Distance = %d; Time = %d:", d[dest], t[dest]);
+        printf("Distance = %d; Time = %d: ", d[dest], t[dest]);
         printPath(dispath);
     } else {
-        printf("Distance = %d:", d[dest]);
+        printf("Distance = %d: ", d[dest]);
         printPath(dispath);
-        printf("\nTime = %d:", t[dest]);
+        printf("Time = %d: ", t[dest]);
         printPath(timepath);
     }
     return 0;
