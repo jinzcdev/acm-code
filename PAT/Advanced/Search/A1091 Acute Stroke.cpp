@@ -1,66 +1,49 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805375457411072
-#include <cstdio>
-#include <queue>
+#include <bits/stdc++.h>
 using namespace std;
 struct node {
     int x, y, z;
-} Node;
-int n, m, slice, T;
-int pixel[1290][130][61];
-bool inq[1290][130][61] = {false};
-int X[6] = {0, 0, 0, 0, 1, -1};
-int Y[6] = {0, 0, 1, -1, 0, 0};
-int Z[6] = {1, -1, 0, 0, 0, 0};
-
-bool judge(int x, int y, int z){
-    if (x >= n || x < 0 || y >= m || y < 0 || z >= slice || z < 0) return false;
-    if (pixel[x][y][z] == 0 || inq[x][y][z]) return false;
-    return true;
+};
+int n, m, l, t, e[65][1300][130];
+int X[] = {0, 0, 1, -1, 0, 0}, Y[] = {0, 0, 0, 0, 1, -1},
+    Z[] = {1, -1, 0, 0, 0, 0};
+bool inq[65][1300][130] = {false};
+bool isVisitable(int x, int y, int z) {
+    return !(x < 0 || x >= m || y < 0 || y >= n || z < 0 || z >= l) &&
+           e[z][x][y] != 0 && !inq[z][x][y];
 }
-
-int BFS(int x, int y, int z) {
-    int tot = 0;
+int bfs(node a) {
     queue<node> q;
-    Node = {x, y, z};
-    q.push(Node);
+    q.push(a);
+    inq[a.z][a.x][a.y] = true;
+    int sum = 0;
     while (!q.empty()) {
         node now = q.front();
         q.pop();
-        tot++;
+        int x = now.x, y = now.y, z = now.z;
+        sum += e[z][x][y];
         for (int i = 0; i < 6; i++) {
-            int newX = now.x + X[i];
-            int newY = now.y + Y[i];
-            int newZ = now.z + Z[i];
-            if (judge(newX, newY, newZ)) {
-                Node = {newX, newY, newZ};
-                q.push(Node);
-                inq[newX][newY][newZ] = true;
+            x = now.x + X[i];
+            y = now.y + Y[i];
+            z = now.z + Z[i];
+            if (isVisitable(x, y, z)) {
+                inq[z][x][y] = true;
+                q.push({x, y, z});
             }
         }
     }
-    if (tot >= T) return tot;
-    else return 0;
+    return sum >= t ? sum : 0;
 }
-
 int main() {
-    scanf("%d%d%d%d", &n, &m, &slice, &T);
-    for (int z = 0; z < slice; z++) {
-        for (int x = 0; x < n; x++) {
-            for (int y = 0; y < m; y++) {
-                scanf("%d", &pixel[x][y][z]);
-            }
-        }
-    }
+    scanf("%d%d%d%d", &m, &n, &l, &t);
+    for (int k = 0; k < l; k++)
+        for (int i = 0; i < m; i++)
+            for (int j = 0; j < n; j++) scanf("%d", &e[k][i][j]);
     int ans = 0;
-    for (int z = 0; z < slice; z++) {
-        for (int x = 0; x < n; x++) {
-            for (int y = 0; y < m; y++) {
-                if (pixel[x][y][z] == 1 && !inq[x][y][z]) {
-                    ans += BFS(x, y, z);
-                }
-            }
-        }
-    }
-    printf("%d\n", ans);
+    for (int k = 0; k < l; k++)
+        for (int i = 0; i < m; i++)
+            for (int j = 0; j < n; j++)
+                if (isVisitable(i, j, k)) ans += bfs({i, j, k});
+    printf("%d", ans);
     return 0;
 }
