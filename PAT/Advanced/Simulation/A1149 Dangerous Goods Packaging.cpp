@@ -1,32 +1,23 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/1038429908921778176
 #include <bits/stdc++.h>
 using namespace std;
+const int N = 100000;
 int main() {
-    int n, m, a, b;
-    cin >> n >> m;
-    map<int, vector<int> > mp;
+    int n, m, k, a, b;
+    scanf("%d%d", &n, &m);
+    vector<int> v[N];
     for (int i = 0; i < n; i++) {
         scanf("%d%d", &a, &b);
-        mp[a].push_back(b);
-        mp[b].push_back(a);
+        v[a].push_back(b);
+        v[b].push_back(a);
     }
-    for (int i = 0; i < m; i++) {
-        scanf("%d", &n);
-        bool vis[100000] = {false}, flag = true;
-        vector<int> v(n);
-        for (int j = 0; j < n; j++) {
-            scanf("%d", &v[j]);
-            if (mp[v[j]].size() != 0) {
-                for (auto it : mp[v[j]]) {
-                    vis[it] = true;
-                }
-            }
-        }
-        for (int j = 0; j < n; j++) {
-            if (vis[v[j]]) {
-                flag = false;
-                break;
-            }
+    while (m--) {
+        scanf("%d", &k);
+        bool flag = true, hash[N] = {false};
+        for (int i = 0; i < k; i++) {
+            scanf("%d", &a);
+            if (hash[a]) flag = false;
+            for (auto it : v[a]) hash[it] = true;
         }
         printf("%s\n", flag ? "Yes" : "No");
     }
