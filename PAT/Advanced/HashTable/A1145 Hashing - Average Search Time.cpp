@@ -1,4 +1,3 @@
-// https://pintia.cn/problem-sets/994805342720868352/problems/994805343236767744
 #include <bits/stdc++.h>
 using namespace std;
 bool isprime(int x) {
@@ -8,23 +7,20 @@ bool isprime(int x) {
     return true;
 }
 int main() {
-    int msize, n, m;
+    int msize, n, m, key, pos;
     scanf("%d%d%d", &msize, &n, &m);
     while (!isprime(msize)) msize++;
-    vector<int> hash(msize);
-    int key;
+    vector<int> hash(msize, 0);
     for (int i = 0; i < n; i++) {
         scanf("%d", &key);
-        bool isfound = false;
         for (int j = 0; j < msize; j++) {
-            int pos = (key + j * j) % msize;
+            pos = (key + j * j) % msize;
             if (hash[pos] == 0) {
                 hash[pos] = key;
-                isfound = true;
                 break;
             }
         }
-        if (!isfound) printf("%d cannot be inserted.\n", key);
+        if (hash[pos] != key) printf("%d cannot be inserted.\n", key);
     }
     int cnt = 0;
     for (int i = 0; i < m; i++) {
@@ -32,7 +28,7 @@ int main() {
         bool flag = false;
         for (int j = 0; j < msize; j++) {
             cnt++;
-            int pos = (key + j * j) % msize;
+            pos = (key + j * j) % msize;
             if (hash[pos] == key || hash[pos] == 0) {
                 flag = true;
                 break;
