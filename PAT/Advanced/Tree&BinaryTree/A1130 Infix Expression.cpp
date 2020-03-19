@@ -2,39 +2,32 @@
 #include <bits/stdc++.h>
 using namespace std;
 struct node {
-    string val;
+    char data[15];
     int left, right;
-} bt[25];
-int root = 1;
-bool isleaf(int i) { return bt[i].left == -1 && bt[i].right == -1; }
-void infixExp(int i) {
+} Node[30];
+int n, root = 1;
+bool isOperator(int i) { return Node[i].left != -1 || Node[i].right != -1; }
+void inOrder(int i) {
     if (i == -1) return;
-    if (isleaf(i)) {
-        cout << bt[i].val;
-        return;
-    }
-    if (i != root) printf("(");
-    infixExp(bt[i].left);
-    cout << bt[i].val;
-    infixExp(bt[i].right);
-    if (i != root) printf(")");
+    if (i != root && isOperator(i)) printf("(");
+    inOrder(Node[i].left);
+    printf("%s", Node[i].data);
+    inOrder(Node[i].right);
+    if (i != root && isOperator(i)) printf(")");
 }
 int main() {
-    int n;
-    cin >> n;
-    bool vis[25] = {false};
+    scanf("%d", &n);
+    unordered_map<int, bool> vis;
     for (int i = 1; i <= n; i++) {
-        cin >> bt[i].val >> bt[i].left >> bt[i].right;
-        if (bt[i].left != -1) vis[bt[i].left] = true;
-        if (bt[i].right != -1) vis[bt[i].right] = true;
+        scanf("%s%d%d", Node[i].data, &Node[i].left, &Node[i].right);
+        vis[Node[i].left] = vis[Node[i].right] = true;
     }
     while (vis[root]) root++;
-    infixExp(root);
+    inOrder(root);
     return 0;
 }
 
 /*
-// https://pintia.cn/problem-sets/994805342720868352/problems/994805347921805312
 #include <bits/stdc++.h>
 using namespace std;
 struct node {
@@ -60,7 +53,8 @@ int main() {
     }
     int root = 1;
     while (vis[root]) root++;
-    if (n == 1) cout << bt[root].data;
+    if (n == 1)
+        cout << bt[root].data;
     else {
         string ans = inOrder(root);
         cout << ans.substr(1, ans.length() - 2);
@@ -68,4 +62,4 @@ int main() {
     return 0;
 }
 
-*/
+* /
