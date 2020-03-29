@@ -1,64 +1,49 @@
-// https://pintia.cn/problem-sets/994805342720868352/problems/994805365537882112
-#include <cstdio>
-#include <queue>
+#include <bits/stdc++.h>
 using namespace std;
-const int maxn = 15;
-struct {
-    int data;
-    int lchild, rchild;
-} node[maxn];
-
-int n, cnt = 0;
-bool isChild[maxn] = {false};           // 标记所有孩子结点, 未出现过即为根节点
-
-void levelorder(int root){
-    queue<int> q;
-    q.push(root);
-    while (!q.empty()){
-        int now = q.front();
+struct node {
+    int data, left, right;
+} tree[15];
+int n, root = 0, cnt = 0;
+void levelOrder(int root) {
+    queue<node> q;
+    q.push(tree[root]);
+    while (!q.empty()) {
+        node now = q.front();
         q.pop();
-        printf("%d", node[now].data);
+        printf("%d", now.data);
         if (++cnt < n) printf(" ");
-        if (node[now].rchild != -1) q.push(node[now].rchild);
-        if (node[now].lchild != -1) q.push(node[now].lchild);
+        if (now.left != -1) q.push(tree[now.left]);
+        if (now.right != -1) q.push(tree[now.right]);
     }
     printf("\n");
 }
-
-void inorder(int root){
-    if (root == -1)
-        return;
-    inorder(node[root].rchild);
-    printf("%d", node[root].data);
+void inOrder(int root) {
+    if (root == -1) return;
+    inOrder(tree[root].left);
+    printf("%d", tree[root].data);
     if (++cnt < n) printf(" ");
-    inorder(node[root].lchild);
+    inOrder(tree[root].right);
 }
-
-int main(){
-    for (int i = 0; i < maxn; i++){
-        node[i].data = i;                       // 初始化结点数据
-        node[i].lchild = node[i].rchild = -1;   // 默认结点左右孩子为空 (= -1)
-    }
+int main() {
     scanf("%d", &n);
-    char lchild, rchild;
-    for (int i = 0; i < n; i++){
-        getchar();                              // 接收回车
-        scanf("%c %c", &lchild, &rchild);
-        if (lchild != '-'){
-            node[i].lchild = lchild - '0';
-            isChild[lchild - '0'] = true;
+    char a, b;
+    bool vis[15] = {false};
+    for (int i = 0; i < n; i++) {
+        getchar();
+        scanf("%c %c", &a, &b);
+        tree[i].data = i;
+        tree[i].left = tree[i].right = -1;
+        if (a != '-') {
+            tree[i].right = a - '0';
+            vis[a - '0'] = true;
         }
-        if (rchild != '-'){
-            node[i].rchild = rchild - '0';
-            isChild[rchild - '0'] = true;
+        if (b != '-') {
+            tree[i].left = b - '0';
+            vis[b - '0'] = true;
         }
     }
-    int root = 0;
-    while (isChild[root]){  // 未标记过的结点即为根节点
-        root++;
-    }
-    levelorder(root);
-    cnt = 0;    // 计数变量重置为0
-    inorder(root);
-    return 0;    
+    while (vis[root]) root++;
+    levelOrder(root);
+    cnt = 0;
+    inOrder(root);
 }

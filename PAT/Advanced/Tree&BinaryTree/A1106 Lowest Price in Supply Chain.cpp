@@ -1,40 +1,36 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805362341822464
-#include <cstdio>
-#include <cmath>
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
-const int maxn = 100010;
-vector<int> tree[maxn];         // 不含数据域,简易表示树结构
-int n;
-double p, r;
-
-int minDepth = maxn, cnt = 0;   // 记录最小深度(即从供应商到销售商的转售次数)
-void DFS(int root, int depth){
-    if (tree[root].size() == 0){
-        if (depth < minDepth){
-            minDepth = depth;
-            cnt = 1;
-        } else if (depth == minDepth){
-            cnt++;
+const int N = 100010;
+vector<int> e[N], ans;
+int n, k, cntMin = 0;
+double r, p, minPrice = 0x3f3f3f3f;
+void dfs(int u, double price) {
+    if (e[u].size() == 0) {
+        if (price < minPrice) {
+            minPrice = price;
+            cntMin = 1;
+        } else if (price == minPrice) {
+            cntMin++;
         }
         return;
     }
-    for (int i = 0; i < tree[root].size(); i++){
-        DFS(tree[root][i], depth + 1);
+    for (auto it : e[u]) {
+        double tempP = price * (1 + r / 100);
+        if (tempP <= minPrice) dfs(it, tempP);
     }
 }
-
-int main(){
+int main() {
     scanf("%d%lf%lf", &n, &p, &r);
-    int k, child;
-    for (int i = 0; i < n; i++){
+    for (int i = 0; i < n; i++) {
         scanf("%d", &k);
-        for (int j = 0; j < k; j++){
-            scanf("%d", &child);
-            tree[i].push_back(child);
+        int temp;
+        while (k--) {
+            scanf("%d", &temp);
+            e[i].push_back(temp);
         }
     }
-    DFS(0, 0);  // 从根结点开始深度优先搜索
-    printf("%.4f %d\n", p * pow(1 + r / 100, minDepth), cnt);
+    dfs(0, p);
+    printf("%.4f %d", minPrice, cntMin);
     return 0;
 }

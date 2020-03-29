@@ -1,6 +1,33 @@
 // https://pintia.cn/problem-sets/15/problems/713
 #include <bits/stdc++.h>
 using namespace std;
+const int N = 1010;
+int heap[N], len = 0;
+void insertHeap(int x) {
+    int hole = ++len;
+    for (; x < heap[hole / 2]; hole /= 2) heap[hole] = move(heap[hole / 2]);
+    heap[hole] = move(x);
+}
+int main() {
+    int n, m, temp;
+    scanf("%d%d", &n, &m);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &temp);
+        insertHeap(temp);
+    }
+    for (int i = 0; i < m; i++) {
+        scanf("%d", &temp);
+        for (int j = temp; j >= 1; j /= 2) {
+            printf("%d", heap[j]);
+            if (j != 1) printf(" ");
+        }
+        printf("\n");
+    }
+    return 0;
+}
+/*
+#include <bits/stdc++.h>
+using namespace std;
 vector<int> heap;
 int len = 0;
 void upAdjust(int low, int high) {
@@ -34,3 +61,4 @@ int main() {
     }
     return 0;
 }
+*/

@@ -1,67 +1,63 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805356599820288
-// 错误点: 寻找father应该使用findFather, 不是father[idx]数组
 #include <bits/stdc++.h>
 using namespace std;
-const int N = 10000;
+const int N = 10010;
 struct node {
-    int id = 99999, cntMember = 0;
-    double estate = 0, area = 0;
+    int id, cnt = 0;
+    double estate, area;
 };
-int father[N];
-bool cmp(node a, node b) {
-    return a.area != b.area ? a.area > b.area : a.id < b.id;
-}
+int father[N], mestate[N] = {0}, area[N] = {0};
 int findFather(int x) {
-    if (x == father[x]) return x;
-    int fa = findFather(father[x]);
-    father[x] = fa;
-    return fa;
+    return x == father[x] ? x : father[x] = findFather(father[x]);
 }
 void uni(int a, int b) {
-    int faA = findFather(a);
-    int faB = findFather(b);
-    if (faA != faB) father[faA] = faB;
+    int faA = findFather(a), faB = findFather(b);
+    if (faA < faB) father[faB] = faA;
+    else if (faA > faB) father[faA] = faB;
+}
+bool cmp(node &a, node &b) {
+    return a.area != b.area ? a.area > b.area : a.id < b.id;
 }
 int main() {
     for (int i = 0; i < N; i++) father[i] = i;
-    int n, estate[N] = {0}, area[N] = {0}, id, fa, mo, child, k;
+    int n, id;
     scanf("%d", &n);
-    unordered_set<int> v;
-    for (int i = 0; i < n; i++) {
+    unordered_set<int> s;
+    while (n--) {
+        int fa, mo, k, child;
         scanf("%d%d%d%d", &id, &fa, &mo, &k);
-        v.insert(id);
+        s.insert(id);
         if (fa != -1) {
             uni(id, fa);
-            v.insert(fa);
+            s.insert(fa);
         }
         if (mo != -1) {
             uni(id, mo);
-            v.insert(mo);
+            s.insert(mo);
         }
-        for (int j = 0; j < k; j++) {
+        while (k--) {
             scanf("%d", &child);
+            s.insert(child);
             uni(id, child);
-            v.insert(child);
         }
-        scanf("%d%d", &estate[id], &area[id]);
+        scanf("%d%d", &mestate[id], &area[id]);
     }
-    map<int, node> family;
-    for (auto it : v) {
-        int fa = findFather(it);  // int fa = father[i]; (x)
-        family[fa].id = min(family[fa].id, it);
-        family[fa].cntMember++;
-        family[fa].estate += estate[it];
-        family[fa].area += area[it];
+    unordered_map<int, node> mp;
+    for (auto it : s) {
+        int fa = findFather(it);
+        mp[fa].cnt++;
+        mp[fa].estate += mestate[it];
+        mp[fa].area += area[it];
     }
     vector<node> ans;
-    for (auto it : family) {
-        it.second.estate /= it.second.cntMember;
-        it.second.area /= it.second.cntMember;
-        ans.push_back(it.second);
+    for (auto it : mp) {
+        node temp = move(it.second);
+        ans.push_back({it.first, temp.cnt, temp.estate / temp.cnt, temp.area / temp.cnt});
     }
     sort(ans.begin(), ans.end(), cmp);
     printf("%d\n", ans.size());
-    for (auto it : ans)
-        printf("%04d %d %.3f %.3f\n", it.id, it.cntMember, it.estate, it.area);
+    for (auto it : ans) {
+        printf("%04d %d %.3f %.3f\n", it.id, it.cnt, it.estate, it.area);
+    }
     return 0;
 }
