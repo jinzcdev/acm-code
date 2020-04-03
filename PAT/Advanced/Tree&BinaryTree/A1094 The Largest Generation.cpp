@@ -1,4 +1,34 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805372601090048
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 110;
+vector<int> e[N];
+int maxCnt = -1, level = -1;
+unordered_map<int, int> cnt;
+void dfs(int u, int depth) {
+    if (++cnt[depth] > maxCnt) {
+        maxCnt = cnt[depth];
+        level = depth;
+    }
+    if (e[u].size() == 0) return;
+    for (auto it : e[u]) dfs(it, depth + 1);
+}
+int main() {
+    int n, m, k, u, v;
+    scanf("%d%d", &n, &m);
+    while (m--) {
+        scanf("%d%d", &u, &k);
+        while (k--) {
+            scanf("%d", &v);
+            e[u].push_back(v);
+        }
+    }
+    dfs(1, 1);
+    printf("%d %d\n", maxCnt, level);
+    return 0;
+}
+
+/*
 #include <cstdio>
 #include <vector>
 #include <queue>
@@ -39,3 +69,4 @@ int main(){
     printf("%d %d\n", maxValue, maxGen);
     return 0;
 }
+*/
