@@ -1,21 +1,19 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805472333250560
+#include <algorithm>
+#include <cmath>
 #include <cstdio>
 #include <iostream>
 #include <queue>
-#include <algorithm>
-#include <cmath>
 #include <vector>
 using namespace std;
 const int maxn = 10010;
 struct player {
-    int arrive, p, tag;
-    int server;
-    // player(int _arrive, int _p, int _tag) : arrive(_arrive), p(_p), tag(_tag){}
+    int arrive, p, tag, server;
 } Player;
 
 struct {
-    bool vip;
     int endtime, numServer;
+    bool vip;
 } T[101];
 vector<player> P;
 
@@ -36,15 +34,8 @@ void allocate(int pid, int tid) {
     T[tid].endtime = P[pid].server + P[pid].p;
     T[tid].numServer++;
 }
-
-bool cmpByArrive(player a, player b) {
-    return a.arrive < b.arrive;
-}
-
-bool cmpByServer(player a, player b) {
-    return a.server < b.server;
-}
-
+bool cmpByArrive(player a, player b) { return a.arrive < b.arrive; }
+bool cmpByServer(player a, player b) { return a.server < b.server; }
 int main() {
     init();
     int n, p, tag, k, m, v;
@@ -52,12 +43,10 @@ int main() {
     scanf("%d", &n);
     for (int i = 0; i < n; i++) {
         scanf("%d:%d:%d %d %d", &hh, &mm, &ss, &p, &tag);
-        // Player = {hh * 3600 + mm * 60 + ss, p, tag};
         Player.arrive = hh * 3600 + mm * 60 + ss;
         Player.p = p * 60;
         Player.tag = tag;
-        if (Player.arrive < 21 * 3600)
-            P.push_back(Player);
+        if (Player.arrive < 21 * 3600) P.push_back(Player);
     }
     sort(P.begin(), P.end(), cmpByArrive);
     scanf("%d%d", &k, &m);
@@ -65,7 +54,7 @@ int main() {
         scanf("%d", &v);
         T[v].vip = true;
     }
-    for (int i = 0; i < P.size(); ) {
+    for (int i = 0; i < P.size();) {
         if (P[i].server != 0) i++;
         if (i == (int)P.size()) break;
         int tid = -1, minendtime = 0x7FFFFFF;
@@ -76,8 +65,8 @@ int main() {
             }
         }
         if (T[tid].endtime >= 21 * 3600) break;
-        if (T[tid].vip == true) {   // it's vip table
-            if (P[i].tag == 1) {  // the first player is vip.
+        if (T[tid].vip == true) {  // it's vip table
+            if (P[i].tag == 1) {   // the first player is vip.
                 allocate(i, tid);
                 i++;
             } else {
@@ -95,8 +84,8 @@ int main() {
                     i++;
                 }
             }
-        } else {    // it's not vip table.
-            if (P[i].tag == 0) {    // 
+        } else {                  // it's not vip table.
+            if (P[i].tag == 0) {  //
                 allocate(i, tid);
                 i++;
             } else {
@@ -113,7 +102,7 @@ int main() {
                 } else {
                     allocate(i, tid);
                     i++;
-                }   
+                }
             }
         }
     }
