@@ -1,6 +1,39 @@
 // https://pintia.cn/problem-sets/994805342720868352/problems/994805368847187968
 #include <bits/stdc++.h>
 using namespace std;
+void downAdjust(vector<int> &heap, int low, int high) {
+    for (int i = low, j = i * 2; j <= high; i = j, j *= 2) {
+        if (j + 1 <= high && heap[j + 1] > heap[j]) j++;
+        if (heap[i] >= heap[j]) break;
+        swap(heap[i], heap[j]);
+    }
+}
+int main() {
+    int n;
+    scanf("%d", &n);
+    vector<int> origin(n + 1), v(n + 1);
+    for (int i = 1; i <= n; i++) scanf("%d", &origin[i]);
+    for (int i = 1; i <= n; i++) scanf("%d", &v[i]);
+    int i = 2, j;
+    while (i <= n && v[i - 1] <= v[i]) j = ++i;
+    while (i <= n && v[i] == origin[i]) i++;
+    if (i == n + 1) {
+        printf("Insertion Sort\n");
+        sort(v.begin() + 1, v.begin() + j + 1);
+    } else {
+        printf("Heap Sort\n");
+        int pos = n;
+        while (pos >= 1 && v[pos] >= v[1]) pos--;
+        swap(v[1], v[pos]);
+        downAdjust(v, 1, pos - 1);
+    }
+    printf("%d", v[1]);
+    for (int k = 2; k <= n; k++) printf(" %d", v[k]);
+    return 0;
+}
+/*
+#include <bits/stdc++.h>
+using namespace std;
 int n;
 vector<int> origin, v;
 void downAdjust(int low, int high) {
@@ -36,7 +69,7 @@ int main() {
     } else {
         printf("Heap Sort\n");
         createHeap();
-        bool flag = true;
+        bool flag = false;
         for (int k = n; k > 1; k--) {
             swap(origin[k], origin[1]);
             downAdjust(1, k - 1);
@@ -56,6 +89,7 @@ int main() {
     }
     return 0;
 }
+*/
 /*
 #include <bits/stdc++.h>
 using namespace std;
