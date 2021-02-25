@@ -2,15 +2,14 @@
 #include <bits/stdc++.h>
 using namespace std;
 int main() {
-    int n, temp;
-    map<int, int> hash;
-    cin >> n;
+    int n, x, ans = 1;
+    unordered_map<int, bool> vis;
+    scanf("%d", &n);
     for (int i = 0; i < n; i++) {
-        scanf("%d", &temp);
-        if (temp > 0) hash[temp] = 1;
+        scanf("%d", &x);
+        vis[x] = true;
     }
-    int number = 1;
-    while (hash[number] == 1) number++;
-    cout << number;
+    while (vis[ans]) ans++;
+    printf("%d", ans);
     return 0;
 }
