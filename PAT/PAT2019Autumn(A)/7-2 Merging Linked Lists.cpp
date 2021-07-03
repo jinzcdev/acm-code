@@ -130,3 +130,61 @@ int main() {
     return 0;
 }
 */
+
+
+/*
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 1000010;
+struct node {
+    int adr, data, next;
+} L[N];
+void reverse(int head) {
+    int last = L[head].next;
+    while (L[last].next != -1) {
+        int p = L[last].next;
+        L[last].next = L[p].next;
+        L[p].next = L[head].next;
+        L[head].next = p;
+    }
+}
+int getlen(int head) {
+    int cnt = 0, p = L[head].next;
+    while (p != -1) {
+        cnt++;
+        p = L[p].next;
+    }
+    return cnt;
+}
+int main() {
+    int a, b, n, adr, data;
+    scanf("%d%d%d", &a, &b, &n);
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &adr);
+        scanf("%d%d", &L[adr].data, &L[adr].next);
+        L[adr].adr = adr;
+    }
+    int h1 = N - 1, h2 = N - 2;
+    L[h1].next = a;
+    L[h2].next = b;
+    if (getlen(h1) < getlen(h2)) swap(h1, h2);
+    reverse(h2);
+    int q = L[h2].next;
+    for (int p = L[h1].next, cnt = 1; p != -1 && q != -1; p = L[p].next, cnt++) {
+        if (cnt % 2 == 0) {
+            int r = L[q].next;
+            L[q].next = L[p].next;
+            L[p].next = q;
+            p = q;
+            q = r;
+        }
+    }
+    int p = L[h1].next;
+    while (p != -1 && L[p].next != -1) {
+        printf("%05d %d %05d\n", p, L[p].data, L[p].next);
+        p = L[p].next;
+    }
+    printf("%05d %d -1\n", p, L[p].data);
+    return 0;
+}
+*/

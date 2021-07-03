@@ -73,3 +73,49 @@ int main() {
     }
     return 0;
 }
+
+/*
+#include <bits/stdc++.h>
+using namespace std;
+typedef pair<int, int> pii;
+bool isprime(int x) {
+    if (x <= 1) return false;
+    for (int i = 2; i * i <= x; i++)
+        if (x % i == 0) return false;
+    return true;
+}
+bool cmp(pii &a, pii &b) {
+    return tie(a.first, a.second) < tie(b.first, b.second);
+}
+int gcd(int a, int b) { return b == 0 ? a : gcd(b, a % b); }
+int getsum(int num) {
+    int sum = 0;
+    while (num != 0) {
+        sum += num % 10;
+        num /= 10;
+    }
+    return sum;
+}
+int main() {
+    int n, k, m;
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i++) {
+        printf("Case %d\n", i);
+        scanf("%d%d", &k, &m);
+        vector<pii> ans;
+        int minA = pow(10, k - 2), maxA = pow(10, k - 1) - 1;
+        for (int j = minA; j <= maxA; j++) {
+            int a = j * 10 + 9;
+            int tmpN = getsum(a + 1), tmpM = getsum(a), x = gcd(tmpM, tmpN);
+            if (tmpM == m && x > 2 && isprime(x)) ans.push_back({tmpN, a});
+        }
+        if (ans.size() == 0) {
+            printf("No Solution\n");
+            continue;
+        }
+        sort(ans.begin(), ans.end(), cmp);
+        for (const auto &it : ans) printf("%d %d\n", it.first, it.second);
+    }
+    return 0;
+}
+*/
