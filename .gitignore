@@ -2,6 +2,8 @@
 !*/
 !*.*
 
+.vscode/
+
 # *test.c
 *(test).cpp
 test.cpp
