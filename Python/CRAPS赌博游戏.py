@@ -1,10 +1,10 @@
 """
-Craps赌博游戏
-我们设定玩家开始游戏时有1000元的赌注
-游戏结束的条件是玩家输光所有的赌注
+    Craps赌博游戏
+    我们设定玩家开始游戏时有1000元的赌注
+    游戏结束的条件是玩家输光所有的赌注
 
-Version: 0.1
-Author: 骆昊
+    Version: 0.1
+    Author: 骆昊
 """
 from random import randint
 
