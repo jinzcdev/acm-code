@@ -13,7 +13,7 @@ int bfs(int u) {
     while (!q.empty()) {
         int now = q.front();
         q.pop();
-        if (depth[now] > 6) continue;
+        if (depth[now] > 6) break;
         for (auto it : e[now]) {
             if (!vis[it]) {
                 q.push(it);

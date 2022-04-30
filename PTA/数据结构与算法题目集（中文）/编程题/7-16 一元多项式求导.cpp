@@ -1,6 +1,7 @@
-// https://pintia.cn/problem-sets/15/problems/820
+// https://pintia.cn/api/problem-sets/15/problems/820
 #include <cstdio>
 int main() {
+    // freopen("in", "r", stdin);
     int n, a, b, flag = 0;
     while (scanf("%d%d", &a, &b) != EOF) {
         if (b > 0) {

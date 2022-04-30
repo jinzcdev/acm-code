@@ -8,13 +8,12 @@ void move(stack<int> &s1, stack<int> &s2) {
     }
 }
 int main() {
-    int n1, n2;
+    int n1, n2, x;
     scanf("%d%d", &n1, &n2);
     if (n1 > n2) swap(n1, n2);
     getchar();
     stack<int> s1, s2;
     char op;
-    int x;
     while (op = getchar(), op != 'T') {
         if (op == 'A') {
             scanf(" %d ", &x);

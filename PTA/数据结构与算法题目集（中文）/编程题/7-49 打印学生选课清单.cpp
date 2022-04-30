@@ -1,4 +1,4 @@
-// https://pintia.cn/problem-sets/15/problems/896
+// https://pintia.cn/problem-sets/994805342720868352/problems/994805447855292416
 #include <bits/stdc++.h>
 using namespace std;
 const int M = 26 * 26 * 26 * 10 + 1;

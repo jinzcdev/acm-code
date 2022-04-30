@@ -4,58 +4,46 @@ using namespace std;
 struct node {
     int data;
     node *left, *right;
-    node(int x) : data(x) {}
+    node(int x) : data(x) { left = right = nullptr; }
 };
-vector<int> pre, preMirror;
 int n, cnt = 0;
-bool isMirror = false;
-void insert(node*& root, int x) {
+void insert(node*& root, int x, bool is_mirror) {
     if (root == NULL) {
         root = new node(x);
         return;
     }
-    if (x < root->data) insert(root->left, x);
-    else insert(root->right, x);
+    if (x < root->data) insert(is_mirror ? root->right : root->left, x, is_mirror);
+    else insert(is_mirror ? root->left : root->right, x, is_mirror);
 }
-void preOrder(node* root) {
+void preOrder(node* root, vector<int>& v, bool is_mirror) {
     if (root == NULL) return;
-    pre.push_back(root->data);
-    preOrder(root->left);
-    preOrder(root->right);
-}
-void preOrderMirror(node* root) {
-    if (root == NULL) return;
-    preMirror.push_back(root->data);
-    preOrderMirror(root->right);
-    preOrderMirror(root->left);
+    v.push_back(root->data);
+    preOrder(is_mirror ? root->right : root->left, v, is_mirror);
+    preOrder(is_mirror ? root->left : root->right, v, is_mirror);
 }
 void postOrder(node* root) {
     if (!root) return;
-    if (isMirror) {
-        postOrder(root->right);
-        postOrder(root->left);
-    } else {
-        postOrder(root->left);
-        postOrder(root->right);
-    }
+    postOrder(root->left);
+    postOrder(root->right);
     printf("%d", root->data);
     if (++cnt < n) printf(" ");
 }
 int main() {
     scanf("%d", &n);
     vector<int> v(n);
-    node* root = NULL;
+    node *root = nullptr, *m_root = nullptr;
     for (int i = 0; i < n; i++) {
         scanf("%d", &v[i]);
-        insert(root, v[i]);
+        insert(root, v[i], false);
+        insert(m_root, v[i], true);
     }
-    preOrder(root);
-    preOrderMirror(root);
-    if (v == pre || v == preMirror) {
+    vector<int> pre, m_pre;
+    preOrder(root, pre, false);
+    preOrder(root, m_pre, true);
+    if (v != pre && v != m_pre) printf("NO\n");
+    else {
         printf("YES\n");
-        if (v == preMirror) isMirror = true;
-        postOrder(root);
-    } else {
-        printf("NO\n");
+        postOrder(v == pre ? root : m_root);
     }
+    return 0;
 }

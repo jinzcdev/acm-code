@@ -16,8 +16,10 @@ void insert(node*& root, int data) {
         root = new node(data);
         return;
     }
-    if (root->data > data) insert(root->lchild, data);
-    else insert(root->rchild, data);
+    if (root->data > data)
+        insert(root->lchild, data);
+    else
+        insert(root->rchild, data);
 }
 
 bool judge(node* p, node* q) {

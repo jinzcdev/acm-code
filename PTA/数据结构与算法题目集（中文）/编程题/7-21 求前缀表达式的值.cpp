@@ -7,7 +7,7 @@ double pop(stack<double> &s) {
     s.pop();
     return top;
 }
-double compute(double &a, double &b, char op) {
+double compute(double a, double b, char op) {
     if (op == '-') return a - b;
     else if (op == '+') return a + b;
     else if (op == '*') return a * b;
