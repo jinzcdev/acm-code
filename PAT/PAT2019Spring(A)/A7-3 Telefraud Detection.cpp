@@ -1,51 +1,49 @@
 #include <bits/stdc++.h>
 using namespace std;
-int father[1010];
-int findFather(int x) {
-    return x == father[x] ? x : father[x] = findFather(father[x]);
+const int N = 1010;
+int father[N];
+int findfather(int x) {
+    return x == father[x] ? x : father[x] = findfather(father[x]);
 }
 void uni(int a, int b) {
-    int faA = findFather(a);
-    int faB = findFather(b);
+    int faA = findfather(a), faB = findfather(b);
     if (faA < faB) father[faB] = faA;
-    if (faA > faB) father[faA] = faB;
+    else father[faA] = faB;
 }
 int main() {
-    for (int i = 0; i < 1010; i++) father[i] = i;
-    int k, n, m, a, b, time;
+    for (int i = 0; i < N; i++) father[i] = i;
+    int k, n, m, a, b, d, record[N][N] = {0};
     scanf("%d%d%d", &k, &n, &m);
-    vector<map<int, int> > record(n + 1);
-    for (int i = 0; i < m; i++) {
-        scanf("%d%d%d", &a, &b, &time);
-        record[a][b] += time;
+    while (m--) {
+        scanf("%d%d%d", &a, &b, &d);
+        record[a][b] += d;
     }
     vector<int> suspect;
     for (int i = 1; i <= n; i++) {
-        if (record[i].size() <= k) continue;
         int callto = 0, callback = 0;
-        for (auto it : record[i]) {
-            if (it.second <= 5) {
+        for (int j = 1; j <= n; j++) {
+            if (i == j) continue;
+            if (record[i][j] != 0 && record[i][j] <= 5) {
                 callto++;
-                if (record[it.first].find(i) != record[it.first].end()) callback++;
+                if (record[j][i] != 0) callback++;
             }
         }
         if (callto > k && callback * 1.0 / callto <= 0.2) suspect.push_back(i);
     }
     if (suspect.size() == 0) {
-        printf("None\n");
+        printf("None");
         return 0;
     }
-    for (int i = 0; i < suspect.size() - 1; i++) {
+    for (int i = 0; i < suspect.size(); i++) {
         for (int j = i + 1; j < suspect.size(); j++) {
-            a = suspect[i]; b = suspect[j];
-            if (record[a][b] > 0 && record[b][a] > 0) uni(a, b);
+            int a = suspect[i], b = suspect[j];
+            if (record[a][b] > 0 && record[b][a] > 0) uni(suspect[i], suspect[j]);
         }
     }
     map<int, vector<int> > mp;
-    for (auto it : suspect) mp[findFather(it)].push_back(it);
+    for (auto it : suspect) mp[findfather(it)].push_back(it);
     for (auto it : mp) {
         vector<int> gang = move(it.second);
-        sort(gang.begin(), gang.end());
         for (int i = 0; i < gang.size(); i++) {
             if (i != 0) printf(" ");
             printf("%d", gang[i]);
