@@ -32,9 +32,6 @@ int main() {
         if (pra == 0 && child == 0) break;
         tree[pra].push_back(child);
     }
-    // for (int pra = 1; pra < n; pra++) {
-    //     if (tree[pra].size() != 0) sort(tree[pra].begin(), tree[pra].end(), cmp);
-    // }
     dfs(R, 1, 1);
     cout << ans;
     return 0;
