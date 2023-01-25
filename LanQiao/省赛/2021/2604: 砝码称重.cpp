@@ -1,3 +1,4 @@
+// https://www.dotcpp.com/oj/problem2604.html
 /**
  * dp[i][j]: 前i个砝码能否称出重量j
  * dp问题关键在于: 1.初始化 2.状态转移函数
