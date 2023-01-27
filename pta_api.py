@@ -61,7 +61,8 @@ def get_problem_type(psID):
 
 
 def get_problem_set_name(psID):
-    data = requestData2Json(url=f"https://pintia.cn/api/problem-sets/{psID}/exams")
+    data = requestData2Json(
+        url=f"https://pintia.cn/api/problem-sets/{psID}/exams")
     return data["problemSet"]["name"]
 
 
@@ -165,7 +166,8 @@ def format_problem_set_name(name: str):
 
 
 def get_dashboard():
-    data = requestData2Json(url="https://pintia.cn/api/content/dashboard")["content"]
+    data = requestData2Json(
+        url="https://pintia.cn/api/content/dashboard")["content"]
     return data
 
 
@@ -202,13 +204,12 @@ def exportExamStatus(pta_session, file_path="./exam.md"):
     for ps_name in data:
         problem_set = data[ps_name]
         d = {
-            "PROGRAMMING": "/",
-            "CODE_COMPLETION": "/",
-            "MULTIPLE_FILE": "/",
+            "CODE_COMPLETION": "\\\\",
+            "PROGRAMMING": "\\\\",
+            "MULTIPLE_FILE": "\\\\",
         }
         for ptype in problem_set:
             d[ptype] = f"{problem_set[ptype]['right']}/{problem_set[ptype]['sum']}"
-        logging.info(f"| {' | '.join([ps_name] + list(d.values()))} |")
         logging.info(f"| {' | '.join([ps_name] + list(d.values()))} |")
 
 
@@ -253,65 +254,67 @@ def exportSolution(pta_session, psID, root_path="./exported"):
         # if len(problem_types) > 1 else root_path
         os.makedirs(save_dir, exist_ok=True)
 
-        url_problem_list = f"https://pintia.cn/api/problem-sets/{psID}/problem-list?problem_type={ptype}"
+        # url_problem_list = f"https://pintia.cn/api/problem-sets/{psID}/problem-list?problem_type={ptype}"
         url_api_problem = (
             "https://pintia.cn/api/problem-sets/" + str(psID) + "/problems/{}"
         )
-        url_problem = "https://pintia.cn/problem-sets/" + str(psID) + "/problems/{}"
+        url_problem = "https://pintia.cn/problem-sets/" + \
+            str(psID) + "/problems/{}"
 
-        problems = requestData2Json(url=url_problem_list, headers=headers)[
-            "problemSetProblems"
-        ]
+        # problems = requestData2Json(url=url_problem_list, headers=headers)[
+        #     "problemSetProblems"
+        # ]
         cnt_exported = 0
-        for problem in problems:
+        for pID in exam_status.keys():
             time.sleep(0.15)
             problem_data = requestData2Json(
-                url=url_api_problem.format(problem["id"]), headers=headers
-            )
-            status = exam_status[problem["id"]]
+                url=url_api_problem.format(pID), headers=headers
+            )["problemSetProblem"]
+            status = exam_status[pID]
             if status["problemSubmissionStatus"] == "PROBLEM_WRONG_ANSWER":
                 wrong_problems.append(
-                    f"[{problem['title']}]({url_problem.format(problem['id'])})"
+                    f"[{problem_data['title']}]({url_problem.format(pID)})"
                 )
             if status["problemSubmissionStatus"] != "PROBLEM_ACCEPTED":
                 continue
             try:
-                submission_detail = problem_data["problemSetProblem"][
+                submission_detail = problem_data[
                     "lastSubmissionDetail"
                 ][detail_type]
                 # Only one compiler is allowed, so get the type of that compiler in 'problemSetProblem'
                 compiler = (
-                    problem_data["problemSetProblem"]["compiler"]
+                    problem_data["compiler"]
                     if ptype == "CODE_COMPLETION"
                     else submission_detail["compiler"]
                 )
                 filename = (
-                    f'{problem["label"]} {problem["title"]}.{compiler2suffix[compiler]}'
+                    f'{problem_data["label"]} {problem_data["title"]}.{compiler2suffix[compiler]}'
                 )
                 save_path = osp.join(save_dir, filename)
-                # logging.info(save_path, url_problem.format(problem["id"]))
+                # logging.info(save_path, url_problem.format(pID))
                 program = submission_detail["program"]
                 with open(save_path, "w") as f:
                     if program.lstrip()[:30].find("https") == -1:
                         f.write(
-                            f"{'#' if compiler2suffix[compiler] == 'py' else '//'} {url_problem.format(problem['id'])}\n"
+                            f"{'#' if compiler2suffix[compiler] == 'py' else '//'} {url_problem.format(pID)}\n"
                         )
                     f.write(formatCode(program))
                 cnt_exported += 1
-                finished_file.write(f"{psID} {problem['id']}\n")
+                finished_file.write(f"{psID} {pID}\n")
 
                 # export README.md
                 source_code_path = f"{ps_name}/{pb_type}/{filename}"
                 # if len(problem_types) > 1 else f"{ps_name}/{filename}"
                 url = f"https://github.com/jinzcdev/PTA/blob/main/{parse.quote(source_code_path)}"
                 # logging.info(f"[{problem['label']}. {problem['title']}]({url})\n")
-                md_lines.append(f"- [{problem['label']}. {problem['title']}]({url})\n")
+                md_lines.append(
+                    f"- [{problem_data['label']}. {problem_data['title']}]({url})\n")
 
             except Exception as e:
                 logging.info(e)
-                logging.info(f'{problem["id"]} failed')
+                logging.info(f'{pID} failed')
 
-        readme.write(f"\n## {pb_type} ({cnt_exported}/{len(problems)})\n\n")
+        readme.write(f"\n## {pb_type} ({cnt_exported}/{len(exam_status)})\n\n")
         for md_item in md_lines:
             readme.write(md_item)
 
