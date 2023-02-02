@@ -6,6 +6,7 @@ import os.path as osp
 import math
 from urllib import parse
 import logging
+from tqdm import tqdm
 
 logging.basicConfig(
     level=logging.INFO,
@@ -61,8 +62,7 @@ def get_problem_type(psID):
 
 
 def get_problem_set_name(psID):
-    data = requestData2Json(
-        url=f"https://pintia.cn/api/problem-sets/{psID}/exams")
+    data = requestData2Json(url=f"https://pintia.cn/api/problem-sets/{psID}/exams")
     return data["problemSet"]["name"]
 
 
@@ -84,6 +84,7 @@ def get_problem_sets():
     ids = []
     for x in pb_sets:
         ids.append(x["id"])
+        print(x["id"], x["name"])
     return ids
 
 
@@ -92,7 +93,10 @@ def get_problem_exam_status(psID, headers):
         url=f"https://pintia.cn/api/problem-sets/{psID}/exam-problem-status",
         headers=headers,
     )
-    data = data["problemStatus"]
+    data = filter(
+        lambda x: x["problemSubmissionStatus"] != "PROBLEM_NO_ANSWER",
+        data["problemStatus"],
+    )
     d = dict()
     for x in data:
         d[x["id"]] = x
@@ -114,7 +118,11 @@ def formatCode(s):
     i = 0
     while i < len(s) and s[i] in (" ", "\n"):
         i = i + 1
-    return s[i:]
+    lines = s[i:].split("\n")
+    i = 0
+    while i < len(lines) and lines[i].find("http") != -1:
+        i += 1
+    return "\n".join(lines[i:])
 
 
 def export_all_problem_list():
@@ -166,13 +174,12 @@ def format_problem_set_name(name: str):
 
 
 def get_dashboard():
-    data = requestData2Json(
-        url="https://pintia.cn/api/content/dashboard")["content"]
+    data = requestData2Json(url="https://pintia.cn/api/content/dashboard")["content"]
     return data
 
 
 def exportExamStatus(pta_session, file_path="./exam.md"):
-    """expor all examination status by `list`& `table` in markdown"""
+    """export all examination status by `list`& `table` in markdown"""
     cnt = 1
     problem_sets = get_problem_sets()
     data = dict()
@@ -231,99 +238,102 @@ def exportSolution(pta_session, psID, root_path="./exported"):
         "Cookie": f"PTASession={pta_session};",
     }
 
+    exportedIDs = []
+
     problem_types = get_problem_type(psID)
     ps_name = format_problem_set_name(get_problem_set_name(psID))
     root_path = osp.join(root_path, ps_name)
     os.makedirs(root_path, exist_ok=True)
 
-    readme = open(osp.join(root_path, "README.md"), "w")
-    finished_file = open("./finished.txt", "w")
-
     logging.info(f"Problem Set: {root_path.split('/')[-1]}")
 
     exam_status = get_problem_exam_status(psID, headers)
+    summaries = get_problem_summary(psID)
+
     wrong_problems = []
+    d_summary = dict()
+
+    # make problem type directory
     for ptype in problem_types:
         assert ptype in ptype2detail
-        detail_type = ptype2detail[ptype]
+        d_summary[ptype] = []
         pb_type = pbtype2name[ptype]
-
-        md_lines = []
-
         save_dir = osp.join(root_path, pb_type)
         # if len(problem_types) > 1 else root_path
         os.makedirs(save_dir, exist_ok=True)
 
-        # url_problem_list = f"https://pintia.cn/api/problem-sets/{psID}/problem-list?problem_type={ptype}"
-        url_api_problem = (
-            "https://pintia.cn/api/problem-sets/" + str(psID) + "/problems/{}"
-        )
-        url_problem = "https://pintia.cn/problem-sets/" + \
-            str(psID) + "/problems/{}"
+    # url_problem_list = f"https://pintia.cn/api/problem-sets/{psID}/problem-list?problem_type={ptype}"
+    url_api_problem = "https://pintia.cn/api/problem-sets/" + str(psID) + "/problems/{}"
+    url_problem = "https://pintia.cn/problem-sets/" + str(psID) + "/exam/problems/{}"
 
-        # problems = requestData2Json(url=url_problem_list, headers=headers)[
-        #     "problemSetProblems"
-        # ]
-        cnt_exported = 0
-        for pID in exam_status.keys():
-            time.sleep(0.15)
-            problem_data = requestData2Json(
-                url=url_api_problem.format(pID), headers=headers
-            )["problemSetProblem"]
-            status = exam_status[pID]
-            if status["problemSubmissionStatus"] == "PROBLEM_WRONG_ANSWER":
-                wrong_problems.append(
-                    f"[{problem_data['title']}]({url_problem.format(pID)})"
+    print(ps_name)
+    for pID in tqdm(exam_status.keys()):
+        time.sleep(0.15)
+        problem_data = requestData2Json(
+            url=url_api_problem.format(pID), headers=headers
+        )["problemSetProblem"]
+        status = exam_status[pID]
+        if status["problemSubmissionStatus"] == "PROBLEM_WRONG_ANSWER":
+            wrong_problems.append(
+                f"[{problem_data['title']}]({url_problem.format(pID)})"
+            )
+
+        if status["problemSubmissionStatus"] != "PROBLEM_ACCEPTED":
+            continue
+        try:
+            ptype = problem_data["type"]
+            pb_type = pbtype2name[ptype]
+            submission_detail = problem_data["lastSubmissionDetail"][
+                ptype2detail[ptype]
+            ]
+            # Only one compiler is allowed, so get the type of that compiler in 'problemSetProblem'
+            compiler = (
+                problem_data["compiler"]
+                if ptype == "CODE_COMPLETION"
+                else submission_detail["compiler"]
+            )
+            filename = f'{problem_data["label"]} {problem_data["title"]}.{compiler2suffix[compiler]}'
+            save_path = osp.join(osp.join(root_path, pb_type), filename)
+            # logging.info(save_path, url_problem.format(pID))
+            program = submission_detail["program"]
+            with open(save_path, "w") as f:
+                program = formatCode(program)
+                f.write(
+                    f"{'#' if compiler2suffix[compiler] == 'py' else '//'} {url_problem.format(pID)}\n"
                 )
-            if status["problemSubmissionStatus"] != "PROBLEM_ACCEPTED":
-                continue
-            try:
-                submission_detail = problem_data[
-                    "lastSubmissionDetail"
-                ][detail_type]
-                # Only one compiler is allowed, so get the type of that compiler in 'problemSetProblem'
-                compiler = (
-                    problem_data["compiler"]
-                    if ptype == "CODE_COMPLETION"
-                    else submission_detail["compiler"]
-                )
-                filename = (
-                    f'{problem_data["label"]} {problem_data["title"]}.{compiler2suffix[compiler]}'
-                )
-                save_path = osp.join(save_dir, filename)
-                # logging.info(save_path, url_problem.format(pID))
-                program = submission_detail["program"]
-                with open(save_path, "w") as f:
-                    if program.lstrip()[:30].find("https") == -1:
-                        f.write(
-                            f"{'#' if compiler2suffix[compiler] == 'py' else '//'} {url_problem.format(pID)}\n"
-                        )
-                    f.write(formatCode(program))
-                cnt_exported += 1
-                finished_file.write(f"{psID} {pID}\n")
+                f.write(formatCode(program))
 
-                # export README.md
-                source_code_path = f"{ps_name}/{pb_type}/{filename}"
-                # if len(problem_types) > 1 else f"{ps_name}/{filename}"
-                url = f"https://github.com/jinzcdev/PTA/blob/main/{parse.quote(source_code_path)}"
-                # logging.info(f"[{problem['label']}. {problem['title']}]({url})\n")
-                md_lines.append(
-                    f"- [{problem_data['label']}. {problem_data['title']}]({url})\n")
+            exportedIDs.append((pID, problem_data["lastSubmissionId"]))
 
-            except Exception as e:
-                logging.info(e)
-                logging.info(f'{pID} failed')
+            # export README.md
+            source_code_path = f"{ps_name}/{pb_type}/{filename}"
+            # if len(problem_types) > 1 else f"{ps_name}/{filename}"
+            url = f"https://github.com/jinzcdev/PTA/blob/main/{parse.quote(source_code_path)}"
+            # logging.info(f"[{problem['label']}. {problem['title']}]({url})\n")
+            if d_summary.get(ptype, None) == None:
+                d_summary[ptype] = []
+            d_summary[ptype].append(
+                f"- [{problem_data['label']}. {problem_data['title']}]({url})\n"
+            )
 
-        readme.write(f"\n## {pb_type} ({cnt_exported}/{len(exam_status)})\n\n")
-        for md_item in md_lines:
-            readme.write(md_item)
+        except Exception as e:
+            logging.info(e)
+            logging.info(f"{pID} failed")
 
-    readme.close()
-    finished_file.close()
+    with open(osp.join(root_path, "README.md"), "w") as readme:
+        for ptype in d_summary:
+            readme.write(
+                f"\n## {pbtype2name[ptype]} ({len(d_summary[ptype])}/{summaries[ptype]['total']})\n\n"
+            )
+            for md_item in d_summary[ptype]:
+                readme.write(md_item)
+
     if len(wrong_problems) > 0:
         logging.info("Wrong Answered Problems:")
         for i, item in enumerate(wrong_problems):
             logging.info(f"{i + 1}.{item}")
+
+    return exportedIDs
 
 
 def rename():
@@ -347,6 +357,16 @@ def rename():
 
 
 if __name__ == "__main__":
+    d = dict()
     pb_sets = get_problem_sets()
     for psID in pb_sets:
-        exportSolution("{Your_Session}", psID, root_path="./export")
+        exportedIDs = exportSolution(
+            "{Your_Session}",
+            psID,
+            root_path="./",
+        )
+        d[psID] = exportedIDs
+    with open("./finished.txt", "w") as finished_file:
+        for psID in d:
+            for pID, submissionID in d[psID]:
+                finished_file.write(f"{psID} {pID} {submissionID}\n")
