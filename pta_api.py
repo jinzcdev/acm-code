@@ -7,6 +7,8 @@ import math
 from urllib import parse
 import logging
 from tqdm import tqdm
+import re
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -62,7 +64,8 @@ def get_problem_type(psID):
 
 
 def get_problem_set_name(psID):
-    data = requestData2Json(url=f"https://pintia.cn/api/problem-sets/{psID}/exams")
+    data = requestData2Json(
+        url=f"https://pintia.cn/api/problem-sets/{psID}/exams")
     return data["problemSet"]["name"]
 
 
@@ -157,24 +160,20 @@ def export_all_problem_list():
         f.write(json.dumps(d, ensure_ascii=False))
 
 
-def format_problem_set_name(name: str):
-    name = name.replace("（", "(").replace("）", ")")
-    for ch in list("《》、- —"):
-        name = name.replace(ch, "_")
-    while len(name) > 0 and name[0] == "_":
-        name = name[1:]
-    while len(name) > 0 and name[-1] == "_":
-        name = name[:-1]
-    s = ""
-    strlen = len(name)
-    for i, x in enumerate(name):
-        if x != "_" or (i != strlen - 1 and name[i + 1] != "_"):
-            s += x
-    return s
+def format_problem_set_name(name: str) -> str:
+    name = re.sub(r"\uFF08|\uFF09",
+                  lambda x: "(" if x.group() == "\uFF08" else ")", name)
+    # "《》—、：" -> "\uFF1A\u300A\u300B\u2014\u3001"
+    name = re.sub(
+        r"[\u3000-\u303F\s\-\uFF1A\u300A\u300B\u2014\u3001]", "_", name)
+    name = re.sub(r"^_+|_+$", "", name)
+    name = re.sub(r"_+", "_", name)
+    return name
 
 
 def get_dashboard():
-    data = requestData2Json(url="https://pintia.cn/api/content/dashboard")["content"]
+    data = requestData2Json(
+        url="https://pintia.cn/api/content/dashboard")["content"]
     return data
 
 
@@ -263,8 +262,10 @@ def exportSolution(pta_session, psID, root_path="./exported"):
         os.makedirs(save_dir, exist_ok=True)
 
     # url_problem_list = f"https://pintia.cn/api/problem-sets/{psID}/problem-list?problem_type={ptype}"
-    url_api_problem = "https://pintia.cn/api/problem-sets/" + str(psID) + "/problems/{}"
-    url_problem = "https://pintia.cn/problem-sets/" + str(psID) + "/exam/problems/{}"
+    url_api_problem = "https://pintia.cn/api/problem-sets/" + \
+        str(psID) + "/problems/{}"
+    url_problem = "https://pintia.cn/problem-sets/" + \
+        str(psID) + "/exam/problems/{}"
 
     print(ps_name)
     for pID in tqdm(exam_status.keys()):
@@ -357,16 +358,18 @@ def rename():
 
 
 if __name__ == "__main__":
+    root_path = "./"
+    pta_session = "{Your_session}"
     d = dict()
     pb_sets = get_problem_sets()
     for psID in pb_sets:
         exportedIDs = exportSolution(
-            "{Your_Session}",
+            pta_session,
             psID,
-            root_path="./",
+            root_path=root_path,
         )
         d[psID] = exportedIDs
-    with open("./finished.txt", "w") as finished_file:
+    with open(osp.join(root_path, "./finished.txt"), "w") as finished_file:
         for psID in d:
             for pID, submissionID in d[psID]:
                 finished_file.write(f"{psID} {pID} {submissionID}\n")
