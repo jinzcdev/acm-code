@@ -87,7 +87,6 @@ def get_problem_sets():
     ids = []
     for x in pb_sets:
         ids.append(x["id"])
-        print(x["id"], x["name"])
     return ids
 
 
@@ -140,14 +139,13 @@ def export_all_problem_list():
             total_problems = summaries[ptype]["total"]
             data = []
             for i in range(math.ceil(total_problems / 200)):
-                time.sleep(0.1)
+                time.sleep(0.5)
                 data += requestData2Json(
                     url=f"https://pintia.cn/api/problem-sets/{psID}/problem-list?problem_type={ptype}&page={i}&limit=200"
                 )["problemSetProblems"]
             for item in data:
                 problem_list.append(
                     {
-                        "psID": psID,
                         "pID": item["id"],
                         "title": item["title"],
                         "label": item["label"],
@@ -155,9 +153,9 @@ def export_all_problem_list():
                         "type": item["type"],
                     }
                 )
-        d[pb_set_name] = problem_list
+        d[f"{psID}|{pb_set_name}"] = problem_list
     with open("data.json", "w") as f:
-        f.write(json.dumps(d, ensure_ascii=False))
+        f.write(json.dumps(d, ensure_ascii=False, separators=(',', ':')))
 
 
 def format_problem_set_name(name: str) -> str:
